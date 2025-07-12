@@ -18,29 +18,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Issyk Kul Lake Tour | Moviy Travel - Kyrgyzstan Adventure & Relaxation',
-  description: 'Discover the beauty of Issyk Kul Lake with Moviy Travel. Explore Kyrgyzstan\'s top tours: beach relaxation, mountain adventures, local cuisine, and cultural experiences. Book your unforgettable Issyk-Kul tour today!',
-  keywords: 'Issyk Kul Lake Tour, Kyrgyzstan travel, Issyk-Kul tours, Central Asia adventure, beach, mountains, local cuisine, cultural experiences, Moviy Travel',
-  openGraph: {
-    title: 'Issyk Kul Lake Tour | Moviy Travel',
-    description: 'Experience the best of Issyk Kul Lake: pristine beaches, mountain adventures, and authentic Kyrgyz culture. Perfect for families, groups, and solo travelers.',
-    images: ['/images/issyk-kul-lake.jpg'],
-    type: 'website',
-    url: 'https://www.moviy-travel.uz/',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Issyk Kul Lake Tour | Moviy Travel',
-    description: 'Book your Issyk Kul Lake adventure with Moviy Travel. Enjoy nature, culture, and relaxation in Kyrgyzstan!',
-    images: ['/images/issyk-kul-lake.jpg'],
-  },
-  alternates: {
-    canonical: 'https://www.moviy-travel.uz/',
-  },
-}
 
 export default function IssykKulTour() {
   const tourPackages = [
