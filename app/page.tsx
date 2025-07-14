@@ -448,14 +448,18 @@ export default function IssykKulTour() {
   ];
 
   const landscapeImages = [
-    { src: "/images/lake-view-1.jpg", alt: "Issiq Ko'lning toza suvlari" },
+    { src: "/images/foto1.jpg", alt: "Issiq Ko'lning toza suvlari" },
+    { src: "/images/foto2.jpg", alt: "Issiq Ko'lning toza suvlari" },
     // { src: "/images/lake-view-2.jpg", alt: "Ko'lda tog'larning aksi" },
-    { src: "/images/mountains-1.jpg", alt: "Ulug'vor tog' tizmalari" },
-    { src: "/images/mountains-2.jpg", alt: "Qor bilan qoplangan cho'qqilar" },
-    { src: "/images/lake-view-3.jpg", alt: "Billur toza ko'l suvlari" },
+    { src: "/images/foto3.jpg", alt: "Issiq Ko'lning toza suvlari" },
+    { src: "/images/foto4.jpg", alt: "Ulug'vor tog' tizmalari" },
+    { src: "/images/foto5.jpg", alt: "Ulug'vor tog' tizmalari" },
+    { src: "/images/foto6.jpg", alt: "Ulug'vor tog' tizmalari" },
+    { src: "/images/foto7.jpg", alt: "Qor bilan qoplangan cho'qqilar" },
+    { src: "/images/foto8.jpg", alt: "Billur toza ko'l suvlari" },
     // { src: "/images/mountains-3.jpg", alt: "Dramatik tog' manzaralari" },
     { src: "/images/lake-view-4.jpg", alt: "Issiq Ko'lda quyosh botishi" },
-    { src: "/images/mountains-4.jpg", alt: "Alp manzaralari" },
+    { src: "/images/mountains-2.jpg", alt: "Alp manzaralari" },
   ];
 
   const activityImages = [
@@ -463,6 +467,11 @@ export default function IssykKulTour() {
       src: "/images/activities/horse-riding.png",
       alt: "Ot Minish",
       title: "Ot Minish",
+    },
+    {
+      src: "/images/foto2.jpg",
+      alt: "Sohil(plyaj)",
+      title: "Sohil(plyaj)",
     },
     {
       src: "/images/activities/quadracycle.png",
