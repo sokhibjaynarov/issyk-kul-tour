@@ -1017,7 +1017,7 @@ export default function IssykKulTour() {
               <CardHeader>
                 <CardTitle className="text-orange-600 flex items-center">
                   <Camera className="h-5 w-5 mr-2" />
-                  Qo'shimcha Xizmatlar
+                  Shaxsiy xarajatlariz
                 </CardTitle>
               </CardHeader>
               <CardContent>
