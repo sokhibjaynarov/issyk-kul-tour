@@ -156,7 +156,6 @@ export default function IssykKulTour() {
             "Plyaj kuni",
             "Issiq Ko'ldan chiqib ketish (12:00)",
             "Bishkekdan chiqib ketish",
-            "TsUM xarid qilish",
             "Esdalik uchun suvenirlar olish",
             "Chegaradan chiqib ketish",
             "Uyga qaytish (22:00)",
@@ -237,7 +236,6 @@ export default function IssykKulTour() {
             "Plyaj kuni",
             "Issiq Ko'ldan chiqib ketish (12:00)",
             "Bishkekdan chiqib ketish",
-            "TsUM xarid qilish",
             "Esdalik uchun suvenirlar olish",
             "Chegaradan chiqib ketish",
             "Uyga qaytish (22:00)",
@@ -364,7 +362,6 @@ export default function IssykKulTour() {
   const notIncluded = [
     "Ko'ngilochar xizmatlar",
     "Forel baliqchiligi",
-    "Ot minish",
     "Yo’lda ovqatlanish",
     "Suv ateraksionlaridan foydalanish:4$-20$",
     "Tog’da kvadratsikl uchish:5$",
@@ -400,7 +397,7 @@ export default function IssykKulTour() {
       title: "Sohil(plyaj)",
     },
     {
-      src: "/images/activities/quadracycle.png",
+      src: "/quadracycle.png",
       alt: "Kvadratsikl",
       title: "Kvadratsikl",
     },
@@ -411,7 +408,7 @@ export default function IssykKulTour() {
     },
     // { src: "/images/hot-springs.jpg", alt: "Qaynar Buloqlar", title: "Qaynar Buloqlar" },
     {
-      src: "/images/activities/swing.png",
+      src: "/swing.png",
       alt: "Arg`imchoqlar",
       title: "Arg`imchoqlar",
     },
@@ -1439,7 +1436,7 @@ export default function IssykKulTour() {
               <span>Telegram</span>
             </a>
             <a
-              href="https://t.me/moviytravel_group"
+              href="https://t.me/+rx-hiHcFGh43YTk6"
               className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
             >
               <Users className="h-5 w-5" />
