@@ -397,7 +397,7 @@ export default function IssykKulTour() {
       title: "Sohil(plyaj)",
     },
     {
-      src: "/images/activities/quadracycle.png",
+      src: "/quadracycle.png",
       alt: "Kvadratsikl",
       title: "Kvadratsikl",
     },
@@ -408,7 +408,7 @@ export default function IssykKulTour() {
     },
     // { src: "/images/hot-springs.jpg", alt: "Qaynar Buloqlar", title: "Qaynar Buloqlar" },
     {
-      src: "/images/activities/swing.png",
+      src: "/swing.png",
       alt: "Arg`imchoqlar",
       title: "Arg`imchoqlar",
     },
