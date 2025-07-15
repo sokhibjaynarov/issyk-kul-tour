@@ -53,9 +53,9 @@ export default function IssykKulTour() {
       id: "2-day",
       title: "Dam Olish Sayohati",
       duration: "2 Kun / 1 Kecha",
-      departure: "Har Shanba Kunlari",
+      departure: "Har Juma Kunlari",
       departureTime: "18:00 - 19:00",
-      returnTime: "Yakshanba 06:00",
+      returnTime: "Dushanba 06:00",
       priceJuly: 180,
       priceAugust: 160,
       hotels: ["ESAL Mehmonxona", "MANAS ATA Mehmonxona"],
@@ -96,9 +96,9 @@ export default function IssykKulTour() {
       id: "4-day",
       title: "Klassik Tajriba",
       duration: "4 Kun / 3 Kecha",
-      departure: "Har Shanba Kunlari",
+      departure: "Har Chorshanba Kunlari",
       departureTime: "18:00 - 19:00",
-      returnTime: "Shanba 05:00",
+      returnTime: "Dushanba 06:00",
       priceJuly: 260,
       priceAugust: 240,
       hotels: ["ESAL Mehmonxona", "AVGUST Mehmonxona"],
@@ -170,7 +170,7 @@ export default function IssykKulTour() {
       duration: "5 Kun / 4 Kecha",
       departure: "Har Shanba Kunlari",
       departureTime: "18:00 - 19:00",
-      returnTime: "Yakshanba 05:00",
+      returnTime: "Juma 06:00",
       priceJuly: 290,
       priceAugust: 270,
       hotels: ["ESAL Mehmonxona", "AVGUST Mehmonxona"],
@@ -669,7 +669,7 @@ export default function IssykKulTour() {
                               {/* Iyul */}
                               <div className="bg-blue-50 px-4 py-2 rounded-md shadow w-full sm:w-auto">
                                 <div className="text-sm text-gray-500 mb-1">
-                                  Iyun
+                                  Iyul
                                 </div>
                                 <div className="flex justify-center items-end space-x-2">
                                   <span className="text-gray-400 line-through text-lg">
@@ -805,6 +805,17 @@ export default function IssykKulTour() {
             <p className="text-gray-600">
               Barcha tur variantlarimizning qisqacha ko'rinishi
             </p>
+            <div className="mt-2">
+              {countdown !== "00:00" ? (
+                <div className="inline-block bg-red-100 text-red-700 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
+                  Aksiya tugashiga {countdown} qoldi!
+                </div>
+              ) : (
+                <div className="inline-block bg-gray-100 text-gray-600 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
+                  Aksiya muddati tugadi
+                </div>
+              )}
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {tourPackages.map((tour) => (
@@ -818,8 +829,13 @@ export default function IssykKulTour() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="text-2xl font-bold text-blue-600">
-                      ${tour.priceJuly}
+                    <div className="flex justify-center items-end space-x-2">
+                      <span className="text-gray-400 line-through text-lg">
+                        ${tour.priceJuly + 50}
+                      </span>
+                      <span className="text-2xl font-bold text-green-600">
+                        ${tour.priceJuly}
+                      </span>
                     </div>
                     <div className="text-sm text-gray-600">
                       {tour.departure}
