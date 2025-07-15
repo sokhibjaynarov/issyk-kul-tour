@@ -362,7 +362,6 @@ export default function IssykKulTour() {
   const notIncluded = [
     "Ko'ngilochar xizmatlar",
     "Forel baliqchiligi",
-    "Ot minish",
     "Yo’lda ovqatlanish",
     "Suv ateraksionlaridan foydalanish:4$-20$",
     "Tog’da kvadratsikl uchish:5$",
