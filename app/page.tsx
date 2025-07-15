@@ -22,8 +22,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import logo from "../public/logo.svg";
 
 export default function IssykKulTour() {
   const tourPackages = [
@@ -74,7 +76,7 @@ export default function IssykKulTour() {
       id: "4-day",
       title: "Klassik Tajriba",
       duration: "4 Kun / 3 Kecha",
-      departure: "Har Chorshanba Kunlari",
+      departure: "Har Shanba Kunlari",
       departureTime: "18:00 - 19:00",
       returnTime: "Shanba 05:00",
       priceJuly: 260,
@@ -146,7 +148,7 @@ export default function IssykKulTour() {
       id: "5-day",
       title: "To'liq Sarguzasht",
       duration: "5 Kun / 4 Kecha",
-      departure: "Har Chorshanba Kunlari",
+      departure: "Har Shanba Kunlari",
       departureTime: "18:00 - 19:00",
       returnTime: "Yakshanba 05:00",
       priceJuly: 290,
@@ -224,112 +226,9 @@ export default function IssykKulTour() {
       ],
     },
     {
-      id: "6-day",
-      title: "Mukammal Dam Olish",
-      duration: "6 Kun / 7 Kecha",
-      departure: "Har Yakshanba Kunlari",
-      departureTime: "18:00 - 19:00",
-      returnTime: "Yakshanba 05:00",
-      priceJuly: 350,
-      priceAugust: 330,
-      hotels: ["ESAL Mehmonxona", "MANAS ATA Mehmonxona"],
-      nights: 6,
-      itinerary: [
-        {
-          day: 1,
-          title: "Kelish va Kutib Olish",
-          activities: [
-            "Chegaradan o'tish (Qirg'iziston Respublikasi)",
-            "Valyuta almashtirish",
-            "Issiq Ko'lga tashrif",
-            "Mehmonxonaga joylashish",
-            "Tushlik",
-            "Bo'sh vaqt (Suzish yoki Plyaj)",
-            "Qaynar buloqqa chiqish",
-            "Kechki ovqat",
-            "Kechki plyajda sayr",
-          ],
-        },
-        {
-          day: 2,
-          title: "Madaniyat va Kruiz",
-          activities: [
-            "Nonushta",
-            "Plyajda dam olish",
-            "Tushlik",
-            "Ruh Ordo (Milliy Muzey)",
-            "Teploxodda sayr",
-            "Kechki ovqat",
-            "Prezident bo'g'iga sayohat",
-            "Diskoteka",
-          ],
-        },
-        {
-          day: 3,
-          title: "Tabiat va Sarguzasht",
-          activities: [
-            "Nonushta",
-            "Daralarga sayohat",
-            "Ot minish",
-            "Sharshara ko'rish",
-            "Forel balig'idan degustatsiya",
-            "Baliqchilik",
-            "Kvadratsikl",
-            "Mehmonxonada tushlik",
-            "Erkin vaqt",
-            "Plyaj",
-            "Kechki ovqat",
-          ],
-        },
-        {
-          day: 4,
-          title: "Sof Dam Olish",
-          activities: [
-            "Mehmonxonada nonushta",
-            "Plyajda dam olish",
-            "Tushlik",
-            "Kechki ovqat",
-          ],
-        },
-        {
-          day: 5,
-          title: "Plyaj Kuni",
-          activities: [
-            "Mehmonxonada nonushta",
-            "Plyajda dam olish",
-            "Tushlik",
-            "Kechki ovqat",
-          ],
-        },
-        {
-          day: 6,
-          title: "Oxirgi Plyaj Kuni",
-          activities: [
-            "Mehmonxonada nonushta",
-            "Plyajda dam olish",
-            "Tushlik",
-            "Kechki ovqat",
-          ],
-        },
-        {
-          day: 7,
-          title: "Jo'nash",
-          activities: [
-            "Nonushta",
-            "Issiq Ko'ldan chiqib ketish (12:00)",
-            "Bishkekdan chiqib ketish",
-            "TsUM xarid qilish",
-            "Esdalik uchun suvenirlar olish",
-            "Chegaradan chiqib ketish",
-            "Shimkentga kelish (19:00)",
-          ],
-        },
-      ],
-    },
-    {
       id: "7-day",
       title: "Mukammal Dam Olish",
-      duration: "7 Kun / 8 Kecha",
+      duration: "6 Kun / 7 Kecha",
       departure: "Har Shanba Kunlari",
       departureTime: "18:00 - 19:00",
       returnTime: "Yakshanba 05:00",
@@ -432,12 +331,18 @@ export default function IssykKulTour() {
   ];
 
   const included = [
+    "Borish kelish transport",
+    "Spalniy avtobus",
+    "Gid hizmati yo’l boshlovchi",
     "Mehmonxona turar joyi",
     "Kuniga 3 marta ovqatlanish",
     "Professional gid",
     "Barcha transferlar",
     "Yaxta kruizi",
     "Qaynar buloqqa kirish",
+    "Grigorskiy tog’lariga sayohat",
+    "Har hil plyajlarga olib borish",
+    "Hoxlovchilar uchun cho’lpon ota parkiga va birinchi prezident bog’iga sayohat",
   ];
 
   const notIncluded = [
@@ -445,6 +350,12 @@ export default function IssykKulTour() {
     "Ko'ngilochar xizmatlar",
     "Forel baliqchiligi",
     "Ot minish",
+    "Yo’lda ovqatlanish",
+    "Turdan tashqari suv ateraksionlaridan foydalanish 4$ dan boshlab 20$ gacham",
+    "Tog’da kvadratsikl uchish 5$",
+    "Farel baliqlari bilan taomlanish 1 kg 15$",
+    "Ot minish 5$",
+    "Burgut bilan rasmga tushish 3$",
   ];
 
   const landscapeImages = [
@@ -594,7 +505,11 @@ export default function IssykKulTour() {
             <div className="flex items-center space-x-2">
               {/* <Mountain className="h-8 w-8 text-blue-600" /> */}
               <span className="text-2xl font-bold text-gray-800">
-                Moviy Travel
+                <Image
+                  style={{ width: "100px", height: "30px" }}
+                  src={logo}
+                  alt="logo"
+                />
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-4 text-sm">
@@ -617,7 +532,7 @@ export default function IssykKulTour() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url('/images/issyk-kul-lake.jpg')`,
+            backgroundImage: `url('/bgd.jpg')`,
           }}
         ></div>
         <div className="relative container mx-auto px-4 h-full flex items-center">
@@ -631,7 +546,7 @@ export default function IssykKulTour() {
                 O'zingizga Mos Sarguzashtni Tanlang
               </span>
             </h1>
-            <p className="text-xl mb-8 text-white drop-shadow-[0_1px_3px_rgba(255,255,255,1)]">
+            <p className="text-xl mb-8 text-white ">
               Dam olish sayohatlaridan tortib to mukammal dam olish
               paketlarigacha - O'rta Osiyoning marvaridini bizning moslashuvchan
               tur variantlarimiz bilan his eting.
@@ -649,7 +564,7 @@ export default function IssykKulTour() {
                 className="border-white text-white hover:bg-white/10 bg-transparent"
                 asChild
               >
-                <a href="tel:+99406421414">
+                <a href="tel:+998991244214">
                   <Phone className="h-4 w-4 mr-2" />
                   Turingizni Bron Qiling
                 </a>
@@ -673,11 +588,10 @@ export default function IssykKulTour() {
           </div>
 
           <Tabs defaultValue="2-day" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="2-day">2 Kun</TabsTrigger>
               <TabsTrigger value="4-day">4 Kun</TabsTrigger>
               <TabsTrigger value="5-day">5 Kun</TabsTrigger>
-              <TabsTrigger value="6-day">6 Kun</TabsTrigger>
               <TabsTrigger value="7-day">7 Kun</TabsTrigger>
             </TabsList>
 
@@ -733,7 +647,7 @@ export default function IssykKulTour() {
                               className="w-full bg-blue-600 hover:bg-blue-700"
                               asChild
                             >
-                              <a href="tel:+99406421414">
+                              <a href="tel:+998991244214">
                                 <Phone className="h-4 w-4 mr-2" />
                                 {tour.title} Bron Qilish
                               </a>
@@ -834,7 +748,7 @@ export default function IssykKulTour() {
                 <CardContent>
                   <div className="space-y-2">
                     <div className="text-2xl font-bold text-blue-600">
-                      ${tour.priceAugust}
+                      ${tour.priceJuly}
                     </div>
                     <div className="text-sm text-gray-600">
                       {tour.departure}
@@ -843,7 +757,7 @@ export default function IssykKulTour() {
                       {tour.nights} kecha
                     </div>
                     <Button size="sm" className="w-full mt-4" asChild>
-                      <a href="tel:+99406421414">
+                      <a href="tel:+998991244214">
                         <Phone className="h-4 w-4 mr-2" />
                         Tanlash
                       </a>
@@ -1455,7 +1369,7 @@ export default function IssykKulTour() {
             className="bg-white text-blue-600 hover:bg-blue-50"
             asChild
           >
-            <a href="tel:+99406421414">
+            <a href="tel:+998991244214">
               <Phone className="h-4 w-4 mr-2" />
               Hoziroq Turingizni Bron Qiling
             </a>
@@ -1470,7 +1384,13 @@ export default function IssykKulTour() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 {/* <Mountain className="h-6 w-6" /> */}
-                <span className="text-xl font-bold">Moviy Travel</span>
+                <span className="text-xl font-bold">
+                  <Image
+                    style={{ width: "100px", height: "30px" }}
+                    src={logo}
+                    alt="logo"
+                  />
+                </span>
               </div>
               <p className="text-gray-400 text-sm mb-4">
                 Issiq Ko'lga eng yaxshi turlarni taklif qiluvchi ishonchli
