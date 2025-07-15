@@ -1,3 +1,4 @@
+"use client";
 import {
   Calendar,
   Clock,
@@ -26,16 +27,35 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import logo from "../public/logo.svg";
+import { useState, useEffect } from "react";
+
+function useCountdown(minutes = 15) {
+  const [timeLeft, setTimeLeft] = useState(minutes * 60);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const minutesLeft = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+  const secondsLeft = String(timeLeft % 60).padStart(2, "0");
+
+  return `${minutesLeft}:${secondsLeft}`;
+}
 
 export default function IssykKulTour() {
+  const countdown = useCountdown(15);
   const tourPackages = [
     {
       id: "2-day",
       title: "Dam Olish Sayohati",
       duration: "2 Kun / 1 Kecha",
-      departure: "Har Shanba Kunlari",
+      departure: "Har Juma Kunlari",
       departureTime: "18:00 - 19:00",
-      returnTime: "Yakshanba 06:00",
+      returnTime: "Dushanba 06:00",
       priceJuly: 180,
       priceAugust: 160,
       hotels: ["ESAL Mehmonxona", "MANAS ATA Mehmonxona"],
@@ -76,9 +96,9 @@ export default function IssykKulTour() {
       id: "4-day",
       title: "Klassik Tajriba",
       duration: "4 Kun / 3 Kecha",
-      departure: "Har Shanba Kunlari",
+      departure: "Har Chorshanba Kunlari",
       departureTime: "18:00 - 19:00",
-      returnTime: "Shanba 05:00",
+      returnTime: "Dushanba 06:00",
       priceJuly: 260,
       priceAugust: 240,
       hotels: ["ESAL Mehmonxona", "AVGUST Mehmonxona"],
@@ -150,7 +170,7 @@ export default function IssykKulTour() {
       duration: "5 Kun / 4 Kecha",
       departure: "Har Shanba Kunlari",
       departureTime: "18:00 - 19:00",
-      returnTime: "Yakshanba 05:00",
+      returnTime: "Juma 06:00",
       priceJuly: 290,
       priceAugust: 270,
       hotels: ["ESAL Mehmonxona", "AVGUST Mehmonxona"],
@@ -342,7 +362,6 @@ export default function IssykKulTour() {
   ];
 
   const notIncluded = [
-    "Shaxsiy xarajatlar",
     "Ko'ngilochar xizmatlar",
     "Forel baliqchiligi",
     "Ot minish",
@@ -608,10 +627,11 @@ export default function IssykKulTour() {
 
           <Tabs defaultValue="2-day" className="w-full">
             <TabsList className="grid w-full grid-cols-4 mb-8">
-              <TabsTrigger value="2-day">2 Kun</TabsTrigger>
-              <TabsTrigger value="4-day">4 Kun</TabsTrigger>
-              <TabsTrigger value="5-day">5 Kun</TabsTrigger>
-              <TabsTrigger value="7-day">7 Kun</TabsTrigger>
+              {tourPackages.map((tour) => (
+                <TabsTrigger key={tour.id} value={tour.id}>
+                  {tour.duration.split(" ")[0]} Kun
+                </TabsTrigger>
+              ))}
             </TabsList>
 
             {tourPackages.map((tour) => (
@@ -626,74 +646,108 @@ export default function IssykKulTour() {
                           {tour.duration}
                         </CardDescription>
                       </CardHeader>
-                      <CardContent className="pt-6">
-                        <div className="space-y-4">
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="h-4 w-4 text-blue-600" />
-                            <span className="text-sm">{tour.departure}</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Clock className="h-4 w-4 text-blue-600" />
-                            <span className="text-sm">
-                              {tour.departureTime}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="h-4 w-4 text-blue-600" />
-                            <span className="text-sm">
-                              Qaytish: {tour.returnTime}
-                            </span>
-                          </div>
-                          <div className="border-t pt-4">
-                            <div className="text-center mb-4">
-                              <div className="text-3xl font-bold text-gray-800">
-                                ${tour.priceJuly}
+                      <CardContent className="pt-6 space-y-4">
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm">{tour.departure}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm">{tour.departureTime}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm">
+                            Qaytish: {tour.returnTime}
+                          </span>
+                        </div>
+
+                        {/* Narxlar + Taymer */}
+                        <div className="border-t pt-4">
+                          <div className="text-center space-y-4">
+                            <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
+                              {/* Iyul */}
+                              <div className="bg-blue-50 px-4 py-2 rounded-md shadow w-full sm:w-auto">
+                                <div className="text-sm text-gray-500 mb-1">
+                                  Iyul
+                                </div>
+                                <div className="flex justify-center items-end space-x-2">
+                                  <span className="text-gray-400 line-through text-lg">
+                                    ${tour.priceJuly + 50}
+                                  </span>
+                                  <span className="text-2xl font-bold text-green-600">
+                                    ${tour.priceJuly}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-green-500">
+                                  Aksiya narxi
+                                </div>
                               </div>
-                              <div className="text-sm text-gray-600">Iyul</div>
-                              {tour.priceAugust !== tour.priceJuly && (
-                                <div className="mt-2">
-                                  <div className="text-2xl font-bold text-green-600">
+
+                              {/* Avgust */}
+                              <div className="bg-orange-50 px-4 py-2 rounded-md shadow w-full sm:w-auto">
+                                <div className="text-sm text-gray-500 mb-1">
+                                  Avgust
+                                </div>
+                                <div className="flex justify-center items-end space-x-2">
+                                  <span className="text-gray-400 line-through text-lg">
+                                    ${tour.priceAugust + 50}
+                                  </span>
+                                  <span className="text-2xl font-bold text-green-600">
                                     ${tour.priceAugust}
-                                  </div>
-                                  <div className="text-sm text-green-600">
-                                    Avgust (${tour.priceJuly - tour.priceAugust}{" "}
-                                    tejang!)
-                                  </div>
+                                  </span>
+                                </div>
+                                <div className="text-xs text-green-500">
+                                  Aksiya narxi
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Taymer */}
+                            <div className="mt-2">
+                              {countdown !== "00:00" ? (
+                                <div className="inline-block bg-red-100 text-red-700 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
+                                  Aksiya tugashiga {countdown} qoldi!
+                                </div>
+                              ) : (
+                                <div className="inline-block bg-gray-100 text-gray-600 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
+                                  Aksiya muddati tugadi
                                 </div>
                               )}
                             </div>
-                            <Button
-                              className="w-full bg-blue-600 hover:bg-blue-700"
-                              asChild
-                            >
-                              <a href="tel:+998991244214">
-                                <Phone className="h-4 w-4 mr-2" />
-                                {tour.title} Bron Qilish
-                              </a>
-                            </Button>
                           </div>
-                          <div className="border-t pt-4">
-                            <h4 className="font-semibold mb-2">
-                              Mehmonxonalar:
-                            </h4>
-                            <ul className="text-sm text-gray-600 space-y-1">
-                              {tour.hotels.map((hotel, index) => (
-                                <li
-                                  key={index}
-                                  className="flex items-center space-x-2"
-                                >
-                                  <CheckCircle className="h-3 w-3 text-green-500" />
-                                  <span>{hotel}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+
+                          <Button
+                            className="w-full mt-4 bg-blue-600 hover:bg-blue-700"
+                            asChild
+                          >
+                            <a href="tel:+998991244214">
+                              <Phone className="h-4 w-4 mr-2" />
+                              {tour.title} Bron Qilish
+                            </a>
+                          </Button>
+                        </div>
+
+                        {/* Mehmonxonalar */}
+                        <div className="border-t pt-4">
+                          <h4 className="font-semibold mb-2">Mehmonxonalar:</h4>
+                          <ul className="text-sm text-gray-600 space-y-1">
+                            {tour.hotels.map((hotel, index) => (
+                              <li
+                                key={index}
+                                className="flex items-center space-x-2"
+                              >
+                                <CheckCircle className="h-3 w-3 text-green-500" />
+                                <span>{hotel}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       </CardContent>
                     </Card>
                   </div>
 
-                  {/* Itinerary */}
+                  {/* Kunlik Dastur */}
                   <div className="lg:col-span-2">
                     <Card>
                       <CardHeader>
@@ -702,37 +756,35 @@ export default function IssykKulTour() {
                           {tour.duration} sarguzashtingiz uchun batafsil jadval
                         </CardDescription>
                       </CardHeader>
-                      <CardContent>
-                        <div className="space-y-6">
-                          {tour.itinerary.map((day, index) => (
-                            <div
-                              key={day.day}
-                              className="border-l-4 border-blue-500 pl-4"
-                            >
-                              <div className="flex items-center space-x-2 mb-2">
-                                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
-                                  {day.day}
-                                </div>
-                                <h3 className="font-semibold text-lg">
-                                  {day.title}
-                                </h3>
+                      <CardContent className="space-y-6">
+                        {tour.itinerary.map((day) => (
+                          <div
+                            key={day.day}
+                            className="border-l-4 border-blue-500 pl-4"
+                          >
+                            <div className="flex items-center space-x-2 mb-2">
+                              <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+                                {day.day}
                               </div>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                {day.activities.map((activity, actIndex) => (
-                                  <div
-                                    key={actIndex}
-                                    className="flex items-center space-x-2"
-                                  >
-                                    <Star className="h-3 w-3 text-blue-600 flex-shrink-0" />
-                                    <span className="text-sm text-gray-700">
-                                      {activity}
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
+                              <h3 className="font-semibold text-lg">
+                                {day.title}
+                              </h3>
                             </div>
-                          ))}
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                              {day.activities.map((activity, i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center space-x-2"
+                                >
+                                  <Star className="h-3 w-3 text-blue-600 flex-shrink-0" />
+                                  <span className="text-sm text-gray-700">
+                                    {activity}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
                       </CardContent>
                     </Card>
                   </div>
@@ -753,6 +805,17 @@ export default function IssykKulTour() {
             <p className="text-gray-600">
               Barcha tur variantlarimizning qisqacha ko'rinishi
             </p>
+            <div className="mt-2">
+              {countdown !== "00:00" ? (
+                <div className="inline-block bg-red-100 text-red-700 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
+                  Aksiya tugashiga {countdown} qoldi!
+                </div>
+              ) : (
+                <div className="inline-block bg-gray-100 text-gray-600 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
+                  Aksiya muddati tugadi
+                </div>
+              )}
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {tourPackages.map((tour) => (
@@ -766,8 +829,13 @@ export default function IssykKulTour() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="text-2xl font-bold text-blue-600">
-                      ${tour.priceJuly}
+                    <div className="flex justify-center items-end space-x-2">
+                      <span className="text-gray-400 line-through text-lg">
+                        ${tour.priceJuly + 50}
+                      </span>
+                      <span className="text-2xl font-bold text-green-600">
+                        ${tour.priceJuly}
+                      </span>
                     </div>
                     <div className="text-sm text-gray-600">
                       {tour.departure}
