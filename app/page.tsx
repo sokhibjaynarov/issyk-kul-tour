@@ -1,3 +1,4 @@
+"use client";
 import {
   Calendar,
   Clock,
@@ -26,8 +27,27 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import logo from "../public/logo.svg";
+import { useState, useEffect } from "react";
+
+function useCountdown(minutes = 15) {
+  const [timeLeft, setTimeLeft] = useState(minutes * 60);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const minutesLeft = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+  const secondsLeft = String(timeLeft % 60).padStart(2, "0");
+
+  return `${minutesLeft}:${secondsLeft}`;
+}
 
 export default function IssykKulTour() {
+  const countdown = useCountdown(15);
   const tourPackages = [
     {
       id: "2-day",
@@ -607,10 +627,11 @@ export default function IssykKulTour() {
 
           <Tabs defaultValue="2-day" className="w-full">
             <TabsList className="grid w-full grid-cols-4 mb-8">
-              <TabsTrigger value="2-day">2 Kun</TabsTrigger>
-              <TabsTrigger value="4-day">4 Kun</TabsTrigger>
-              <TabsTrigger value="5-day">5 Kun</TabsTrigger>
-              <TabsTrigger value="7-day">7 Kun</TabsTrigger>
+              {tourPackages.map((tour) => (
+                <TabsTrigger key={tour.id} value={tour.id}>
+                  {tour.duration.split(" ")[0]} Kun
+                </TabsTrigger>
+              ))}
             </TabsList>
 
             {tourPackages.map((tour) => (
@@ -643,12 +664,29 @@ export default function IssykKulTour() {
                               Qaytish: {tour.returnTime}
                             </span>
                           </div>
+
+                          {/* Aksiya narx va taymer */}
                           <div className="border-t pt-4">
                             <div className="text-center mb-4">
-                              <div className="text-3xl font-bold text-gray-800">
-                                ${tour.priceJuly}
-                              </div>
-                              <div className="text-sm text-gray-600">Iyul</div>
+                              {countdown !== "00:00" ? (
+                                <>
+                                  <div className="flex justify-center items-center space-x-2">
+                                    <span className="text-xl text-gray-400 line-through">
+                                      ${tour.priceJuly + 50}
+                                    </span>
+                                    <span className="text-3xl font-bold text-green-600">
+                                      ${tour.priceJuly}
+                                    </span>
+                                  </div>
+                                  <div className="text-sm text-red-500 font-semibold mt-1">
+                                    Aksiya tugashiga: {countdown}
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="text-red-600 font-semibold">
+                                  Aksiya muddati tugadi
+                                </div>
+                              )}
                               {tour.priceAugust !== tour.priceJuly && (
                                 <div className="mt-2">
                                   <div className="text-2xl font-bold text-green-600">
@@ -661,6 +699,7 @@ export default function IssykKulTour() {
                                 </div>
                               )}
                             </div>
+
                             <Button
                               className="w-full bg-blue-600 hover:bg-blue-700"
                               asChild
@@ -671,6 +710,8 @@ export default function IssykKulTour() {
                               </a>
                             </Button>
                           </div>
+
+                          {/* Mehmonxonalar */}
                           <div className="border-t pt-4">
                             <h4 className="font-semibold mb-2">
                               Mehmonxonalar:
@@ -692,7 +733,7 @@ export default function IssykKulTour() {
                     </Card>
                   </div>
 
-                  {/* Itinerary */}
+                  {/* Kunlik dastur */}
                   <div className="lg:col-span-2">
                     <Card>
                       <CardHeader>
@@ -703,7 +744,7 @@ export default function IssykKulTour() {
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-6">
-                          {tour.itinerary.map((day, index) => (
+                          {tour.itinerary.map((day) => (
                             <div
                               key={day.day}
                               className="border-l-4 border-blue-500 pl-4"
