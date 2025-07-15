@@ -342,7 +342,6 @@ export default function IssykKulTour() {
   ];
 
   const notIncluded = [
-    "Shaxsiy xarajatlar",
     "Ko'ngilochar xizmatlar",
     "Forel baliqchiligi",
     "Ot minish",
@@ -657,7 +656,7 @@ export default function IssykKulTour() {
                                   </div>
                                   <div className="text-sm text-green-600">
                                     Avgust (${tour.priceJuly - tour.priceAugust}{" "}
-                                    tejang!)
+                                    chagirma!)
                                   </div>
                                 </div>
                               )}
