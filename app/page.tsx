@@ -531,7 +531,7 @@ export default function IssykKulTour() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url('/bgd.jpg')`,
+            backgroundImage: `url('/lake.png')`,
           }}
         ></div>
         <div className="relative container mx-auto px-4 h-full flex items-center">
