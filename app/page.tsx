@@ -228,7 +228,7 @@ export default function IssykKulTour() {
     {
       id: "7-day",
       title: "Mukammal Dam Olish",
-      duration: "6 Kun / 7 Kecha",
+      duration: "7 Kun / 6 Kecha",
       departure: "Har Shanba Kunlari",
       departureTime: "18:00 - 19:00",
       returnTime: "Yakshanba 05:00",
@@ -342,7 +342,6 @@ export default function IssykKulTour() {
     "Qaynar buloqqa kirish",
     "Grigorskiy tog’lariga sayohat",
     "Har hil plyajlarga olib borish",
-    "Hoxlovchilar uchun cho’lpon ota parkiga va birinchi prezident bog’iga sayohat",
   ];
 
   const notIncluded = [
@@ -351,11 +350,11 @@ export default function IssykKulTour() {
     "Forel baliqchiligi",
     "Ot minish",
     "Yo’lda ovqatlanish",
-    "Turdan tashqari suv ateraksionlaridan foydalanish 4$ dan boshlab 20$ gacham",
-    "Tog’da kvadratsikl uchish 5$",
-    "Farel baliqlari bilan taomlanish 1 kg 15$",
-    "Ot minish 5$",
-    "Burgut bilan rasmga tushish 3$",
+    "Suv ateraksionlaridan foydalanish:4$-20$",
+    "Tog’da kvadratsikl uchish:5$",
+    "Farel baliqlari bilan taomlanish:1kg 15$",
+    "Ot minish:5$",
+    "Burgut bilan rasmga tushish:3$",
   ];
 
   const landscapeImages = [
@@ -532,7 +531,7 @@ export default function IssykKulTour() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url('/bgd.jpg')`,
+            backgroundImage: `url('/lake.png')`,
           }}
         ></div>
         <div className="relative container mx-auto px-4 h-full flex items-center">
@@ -1325,17 +1324,13 @@ export default function IssykKulTour() {
               <MapPinIcon className="h-8 w-8 mb-2" />
               <h3 className="font-semibold mb-1">Ofis Manzili</h3>
               <p className="text-blue-100 text-sm">
-                Toshkent sh., Yunusobod t.
-              </p>
-              <p className="text-blue-100 text-sm">
-                Abdulla Qodiriy ko'chasi 12
+                Chilonzor tumani Neus biznes center
               </p>
             </div>
             <div className="flex flex-col items-center">
               <Clock className="h-8 w-8 mb-2" />
               <h3 className="font-semibold mb-1">Ish Vaqti</h3>
-              <p className="text-blue-100">Dush-Juma: 09:00-18:00</p>
-              <p className="text-blue-100">Shanba: 09:00-14:00</p>
+              <p className="text-blue-100">Har kuni: 10:00-20:00</p>
             </div>
           </div>
 
@@ -1424,14 +1419,13 @@ export default function IssykKulTour() {
             <div>
               <h3 className="font-semibold mb-4">Ish Vaqti</h3>
               <div className="space-y-2 text-sm text-gray-400">
-                <p>Dushanba - Shanba: 10:00 - 20:00</p>
-                <p>Yakshanba: 10:00 - 18:00</p>
+                <p>Har kuni: 10:00 - 20:00</p>
               </div>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center">
             <p className="text-gray-400 text-sm">
-              © 2024 Moviy Travel. Barcha huquqlar himoyalangan.
+              © 2025 Moviy Travel. Barcha huquqlar himoyalangan.
             </p>
             <p className="text-gray-400 text-sm">
               Turlar 0-75 yosh uchun mavjud. Pasport talab qilinadi.
