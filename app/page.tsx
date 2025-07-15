@@ -259,7 +259,6 @@ export default function IssykKulTour() {
             "Nonushta",
             "Plyajda dam olish",
             "Tushlik",
-            "Ruh Ordo (Milliy Muzey)",
             "Teploxodda sayr",
             "Kechki ovqat",
             "Prezident bo'g'iga sayohat",
@@ -319,8 +318,6 @@ export default function IssykKulTour() {
           activities: [
             "Nonushta",
             "Issiq Ko'ldan chiqib ketish (12:00)",
-            "Bishkekdan chiqib ketish",
-            "TsUM xarid qilish",
             "Esdalik uchun suvenirlar olish",
             "Chegaradan chiqib ketish",
             "Shimkentga kelish (19:00)",
@@ -529,23 +526,46 @@ export default function IssykKulTour() {
       <section className="relative h-[600px] bg-gradient-to-r from-blue-600 to-blue-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center object-cover"
           style={{
-            backgroundImage: `url('/lake.png')`,
+            backgroundImage: `url('/images/issyk-kul-lake.jpg')`,
           }}
         ></div>
         <div className="relative container mx-auto px-4 h-full flex items-center">
-          <div className="max-w-2xl">
+          <div>
             <Badge className="mb-4 bg-white/20 text-white border-white/30">
               Bir Nechta Tur Variantlari Mavjud
             </Badge>
-            <h1 className="text-5xl font-bold mb-6">
+            <h1
+              className="text-5xl bg-[#00c9c7]/80 font-bold mb-6"
+              style={{
+                maxWidth: "550px",
+                padding: "4px 5px 4px 5px",
+                borderRadius: "5px",
+              }}
+            >
               Issiq Ko'lni Kashf Eting
-              <span className="block text-3xl text-blue-200 mt-2">
-                O'zingizga Mos Sarguzashtni Tanlang
-              </span>
             </h1>
-            <p className="text-xl mb-8 text-white ">
+            <span
+              style={{
+                maxWidth: "515px",
+                padding: "4px 5px 4px 5px",
+                borderRadius: "5px",
+                marginBottom: "100px",
+              }}
+              className="5block text-3xl  mb-2  bg-[#00c9c7]/80 text-blue-200 mt-2"
+            >
+              O'zingizga Mos Sarguzashtni Tanlang
+            </span>
+            <p
+              style={{
+                maxWidth: "800px",
+                padding: "4px 5px 4px 5px",
+                borderRadius: "5px",
+                marginTop: "20px",
+              }}
+              className="text-xl bg-[#00c9c7]/80 mb-8 text-white "
+            >
               Dam olish sayohatlaridan tortib to mukammal dam olish
               paketlarigacha - O'rta Osiyoning marvaridini bizning moslashuvchan
               tur variantlarimiz bilan his eting.
@@ -560,7 +580,7 @@ export default function IssykKulTour() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white text-white hover:bg-white/10 bg-transparent"
+                className="border-[#00c9c7]/80 bg-[#00c9c7]/80 text-white hover:bg-white/10 "
                 asChild
               >
                 <a href="tel:+998991244214">
