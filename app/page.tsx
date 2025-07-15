@@ -156,7 +156,6 @@ export default function IssykKulTour() {
             "Plyaj kuni",
             "Issiq Ko'ldan chiqib ketish (12:00)",
             "Bishkekdan chiqib ketish",
-            "TsUM xarid qilish",
             "Esdalik uchun suvenirlar olish",
             "Chegaradan chiqib ketish",
             "Uyga qaytish (22:00)",
@@ -237,7 +236,6 @@ export default function IssykKulTour() {
             "Plyaj kuni",
             "Issiq Ko'ldan chiqib ketish (12:00)",
             "Bishkekdan chiqib ketish",
-            "TsUM xarid qilish",
             "Esdalik uchun suvenirlar olish",
             "Chegaradan chiqib ketish",
             "Uyga qaytish (22:00)",
@@ -1439,7 +1437,7 @@ export default function IssykKulTour() {
               <span>Telegram</span>
             </a>
             <a
-              href="https://t.me/moviytravel_group"
+              href="https://t.me/+rx-hiHcFGh43YTk6"
               className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
             >
               <Users className="h-5 w-5" />
