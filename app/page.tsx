@@ -28,13 +28,306 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import logo from "../public/logo.svg";
 import { useState, useEffect } from "react";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 
-function useCountdown(minutes = 15) {
+// Translation object for Uzbek and Russian
+const translations = {
+  uz: {
+    language: "Til",
+    uzbek: "O'zbekcha",
+    russian: "Ruscha",
+    phone: "Telefon",
+    email: "Email",
+    availableTours: "Bir Nechta Tur Variantlari Mavjud",
+    discoverIssykKul: "Issiq Ko'lni Kashf Eting",
+    chooseAdventure: "O'zingizga Mos Sarguzashtni Tanlang",
+    heroDesc:
+      "Dam olish sayohatlaridan tortib to mukammal dam olish paketlarigacha - O'rta Osiyoning marvaridini bizning moslashuvchan tur variantlarimiz bilan his eting.",
+    viewTours: "Turlarni Ko'rish - $180 dan",
+    bookTour: "Turingizni Bron Qiling",
+    selectPerfectTour: "Mukammal Turingizni Tanlang",
+    selectPerfectTourDesc:
+      "Issiq Ko'lda noyob tajribalar taqdim etish uchun ehtiyotkorlik bilan yaratilgan tur paketlarimizdan birini tanlang.",
+    compareAll: "Barcha Paketlarni Solishtiring",
+    compareAllDesc: "Barcha tur variantlarimizning qisqacha ko'rinishi",
+    promoEndsIn: "Aksiya tugashiga {time} qoldi!",
+    promoEnded: "Aksiya muddati tugadi",
+    dayProgram: "Kun-Kunlik Dastur",
+    dayProgramDesc: "{duration} sarguzashtingiz uchun batafsil jadval",
+    included: "Nima Kiritilgan",
+    includedDesc: "Barcha paketlar ushbu muhim xizmatlarni o'z ichiga oladi",
+    includedList: [
+      "Borish kelish transport",
+      "Spalniy avtobus",
+      "Gid hizmati yo'l boshlovchi",
+      "Mehmonxona turar joyi",
+      "Kuniga 3 marta ovqatlanish",
+      "Professional gid",
+      "Barcha transferlar",
+      "Yaxta kruizi",
+      "Qaynar buloqqa kirish",
+      "Grigorskiy tog'lariga sayohat",
+      "Har hil plyajlarga olib borish",
+    ],
+    notIncluded: "Kiritilmagan",
+    notIncludedList: [
+      "Ko'ngilochar xizmatlar",
+      "Forel baliqchiligi",
+      "Yo'lda ovqatlanish",
+      "Suv ateraksionlaridan foydalanish:4$-20$",
+      "Tog'da kvadratsikl uchish:5$",
+      "Farel baliqlari bilan taomlanish:1kg 15$",
+      "Ot minish:5$",
+      "Burgut bilan rasmga tushish:3$",
+    ],
+    tourMemories: "Tur Xotiralari",
+    tourMemoriesDesc:
+      "Sayohatchilarimizning ko'zlari orqali Issiq Ko'lning sehrini his eting. Hayratlanarli manzaralar, qiziqarli faoliyatlar va turlarimizdan unutilmas lahzalarni ko'ring.",
+    photoGallery: "Foto Galereya",
+    landscapes: "Manzaralar",
+    activities: "Faoliyatlar",
+    hotels: "Mehmonxonalar",
+    food: "Mahalliy Taomlar",
+    memories: "Xotiralar",
+    requirements: "Tur Talablari va Shartlari",
+    requirementsDesc:
+      "Tur tajribangiz xavfsiz, qulay va esda qolarli bo'lishini ta'minlash uchun muhim ma'lumotlar.",
+    readyForAdventure: "Sarguzashtingizga Tayyormisiz?",
+    readyForAdventureDesc:
+      "Mukammal Issiq Ko'l turingizni tanlang va umr bo'yi esda qoladigan xotiralar yarating.",
+    call: "Qo'ng'iroq Qiling",
+    address: "Ofis Manzili",
+    workTime: "Ish Vaqti",
+    bookNow: "Hoziroq Turingizni Bron Qiling",
+    companyDesc:
+      "Issiq Ko'lga eng yaxshi turlarni taklif qiluvchi ishonchli sayohat kompaniyasi.",
+    contactInfo: "Aloqa Ma'lumotlari",
+    website: "Vebsayt",
+    day: "Kun",
+    return: "Qaytish",
+    july: "Iyul",
+    august: "Avgust",
+    promoPrice: "Aksiya narxi",
+    night: "kecha",
+    select: "Tanlash",
+    barchaPaketlargaKiritilgan: "Barcha Paketlarga Kiritilgan",
+    shaxsiyXarajatlari: "Shaxsiy xarajatlariz",
+    turTalablari: "Tur Talablari",
+    haqiqiyPasportTalabQilinadi: "Haqiqiy Pasport Talab Qilinadi",
+    passportRequiredDuringTour: "Tur davomida pasportingiz doimo yoningizda bo'lishi kerak",
+    ageLimit: "Yosh Chegarasi",
+    yosh: "yosh",
+    toursForAllAges: "Turlar chaqaloqlardan keksalargacha barcha yoshlar uchun mos",
+    basicPhysicalPreparation: "Asosiy Jismoniy Tayyorgarlik",
+    someActivitiesRequireModerateFitness: "Ba'zi faoliyatlar o'rtacha jismoniy faollikni talab qiladi",
+    swimmingAbilityOptional: "Suzish Qobiliyati (Ixtiyoriy)",
+    lifeJacketsProvidedForWaterActivities: "Suv faoliyatlari uchun, garchi qutqaruv jiletlari beriladi",
+    travelInsuranceRecommended: "Sayohat Sug'urtasi Tavsiya Etiladi",
+    weRecommendComprehensiveTravelInsurance: "Biz keng qamrovli sayohat sug'urtasini tavsiya qilamiz",
+    whatToBring: "Nima Olib Kelish Kerak",
+    comfortableClothing: "Qulay Kiyimlar",
+    layeredClothingForMountainWeather: "O'zgaruvchan tog' ob-havosi uchun qatlamli kiyimlar",
+    swimwearAndBeachGear: "Suzish Kiyimlari va Plyaj Jihozlari",
+    forLakeAndBeachActivities: "Ko'l faoliyatlari va plyajda dam olish uchun",
+    sunProtection: "Quyoshdan Himoya",
+    sunscreenHatSunglassesForMountains: "Baland tog'lar uchun quyosh kremi, shlyapa va ko'zoynak",
+    comfortableWalkingShoes: "Qulay Yurish Oyoq Kiyimlari",
+    forWalkingAndOutdoorActivities: "Piyoda yurish va ochiq havo faoliyatlari uchun",
+    personalMedications: "Shaxsiy Dorilar",
+    necessaryPrescriptionOrPersonalMedications: "Kerakli retseptli yoki shaxsiy dorilar",
+    termsAndConditions: "Shartlar va Qoidalar",
+    bookingAndPayment: "Bron Qilish va To'lov",
+    fullPaymentRequiredAfterBookingConfirmation: "Bron tasdiqlangandan keyin to'liq to'lov talab qilinadi",
+    tourPackagesNonRefundable: "Tur paketlari qaytarilmaydi",
+    pricesMayVaryByGroupSizeAndSeason: "Narxlar guruh hajmi va mavsumga qarab o'zgarishi mumkin",
+    cancellationPolicy: "Bekor Qilish Siyosati",
+    toursMayBeRescheduledIfNotEnoughParticipants: "Ishtirokchilar yetarli bo'lmasa turlar qayta rejalashtirilishi mumkin",
+    weatherRelatedCancellationsRescheduled: "Ob-havo bilan bog'liq bekor qilinishlar qayta rejalashtiriladi",
+    companyMayChangeRouteIfNecessary: "Kompaniya kerak bo'lsa marshrutni o'zgartirish huquqini saqlab qoladi",
+    accommodation: "Turar Joy",
+    hotelListMayChange: "Mehmonxonalar ro'yxati taxminiy va o'zgarishi mumkin",
+    hotelsMayBeReplacedWithSimilarOrBetter: "Mehmonxonalar bir xil yoki yuqori toifadagi bilan almashtirilishi mumkin",
+    hotelsLocatedAlongTourRoute: "Mehmonxonalar tur marshrutidagi hududlarda joylashgan",
+    liability: "Javobgarlik",
+    companyNotResponsibleForLostItems: "Kompaniya yo'qolgan yoki tashlab ketilgan buyumlar uchun javobgar emas",
+    helpFindingLostItems: "Yo'qolgan narsalarni topishda yordam beriladi",
+    participantsResponsibleForOwnSafety: "Ishtirokchilar shaxsiy xavfsizlik uchun javobgar",
+    importantNote: "Muhim Eslatma",
+    companyReservesRightToChangeProgramRouteDatesHotelsIfNotEnoughParticipants: "Kompaniya dasturga o'zgartirishlar kiritish, marshrutni, jo'nash sanalari va vaqtlarini o'zgartirish, shuningdek dasturda ko'rsatilgan mehmonxonalarni o'zgartirish huquqini o'zida saqlab qoladi. Agar guruhdagi ishtirokchilar soni yetarli bo'lmasa tur keyingi mavjud sanaga ko'chirilishi yoki bekor qilinishi mumkin. Barcha ishtirokchilar tur davomida pasportlarini olib yurishlari kerak.",
+    instagram: "Instagram",
+    telegram: "Telegram",
+    telegramGuruh: "Telegram Guruh",
+    barchaHuquqlarHimoyalangan: "Barcha huquqlar himoyalangan",
+    turlar: "Turlar",
+    pasportTalabQilinadi: "Pasport talab qilinadi",
+    // ... add more as needed ...
+  },
+  ru: {
+    language: "Язык",
+    uzbek: "Узбекский",
+    russian: "Русский",
+    phone: "Телефон",
+    email: "Эл. почта",
+    availableTours: "Доступно несколько туров",
+    discoverIssykKul: "Откройте для себя Иссык-Куль",
+    chooseAdventure: "Выберите свое приключение",
+    heroDesc:
+      "От отдыха до идеальных турпакетов — почувствуйте жемчужину Средней Азии с нашими гибкими турами.",
+    viewTours: "Смотреть туры - от $180",
+    bookTour: "Забронировать тур",
+    selectPerfectTour: "Выберите идеальный тур",
+    selectPerfectTourDesc:
+      "Выберите один из наших турпакетов, созданных для уникальных впечатлений на Иссык-Куле.",
+    compareAll: "Сравните все пакеты",
+    compareAllDesc: "Краткий обзор всех наших туров",
+    promoEndsIn: "До конца акции осталось {time}!",
+    promoEnded: "Срок акции истек",
+    dayProgram: "Дневная программа",
+    dayProgramDesc: "Подробное расписание для вашего приключения на {duration}",
+    included: "Что включено",
+    includedDesc: "Все пакеты включают эти важные услуги",
+    includedList: [
+      "Трансфер туда-обратно",
+      "Спальный автобус",
+      "Услуги гида",
+      "Проживание в отеле",
+      "3-разовое питание в день",
+      "Профессиональный гид",
+      "Все трансферы",
+      "Круиз на яхте",
+      "Вход в горячие источники",
+      "Экскурсия в горы Григорьевские",
+      "Посещение различных пляжей",
+    ],
+    notIncluded: "Не включено",
+    notIncludedList: [
+      "Развлекательные услуги",
+      "Рыбалка на форель",
+      "Питание в дороге",
+      "Водные аттракционы: 4$-20$",
+      "Катание на квадроцикле в горах: 5$",
+      "Ужин с форелью: 1кг 15$",
+      "Верховая езда: 5$",
+      "Фото с беркутом: 3$",
+    ],
+    tourMemories: "Воспоминания о туре",
+    tourMemoriesDesc:
+      "Почувствуйте магию Иссык-Куля глазами наших путешественников. Смотрите незабываемые моменты, потрясающие виды и интересные активности.",
+    photoGallery: "Фотогалерея",
+    landscapes: "Пейзажи",
+    activities: "Активности",
+    hotels: "Отели",
+    food: "Местная кухня",
+    memories: "Воспоминания",
+    requirements: "Требования и условия тура",
+    requirementsDesc:
+      "Важная информация для вашей безопасности, комфорта и незабываемых впечатлений.",
+    readyForAdventure: "Готовы к приключению?",
+    readyForAdventureDesc:
+      "Выберите идеальный тур на Иссык-Куль и создайте воспоминания на всю жизнь.",
+    call: "Позвонить",
+    address: "Адрес офиса",
+    workTime: "Время работы",
+    bookNow: "Забронируйте сейчас",
+    companyDesc:
+      "Надежная туристическая компания, предлагающая лучшие туры на Иссык-Куль.",
+    contactInfo: "Контактная информация",
+    website: "Веб-сайт",
+    day: "День",
+    return: "Возврат",
+    july: "Июль",
+    august: "Август",
+    promoPrice: "Цена по акции",
+    night: "ночь",
+    select: "Выбрать",
+    barchaPaketlargaKiritilgan: "Включено во все пакеты",
+    shaxsiyXarajatlari: "Личные расходы",
+    turTalablari: "Требования к туру",
+    haqiqiyPasportTalabQilinadi: "Требуется действующий паспорт",
+    passportRequiredDuringTour: "Во время тура паспорт всегда должен быть при себе",
+    ageLimit: "Возрастное ограничение",
+    yosh: "лет",
+    toursForAllAges: "Туры подходят для всех возрастов от младенцев до пожилых",
+    basicPhysicalPreparation: "Базовая физическая подготовка",
+    someActivitiesRequireModerateFitness: "Некоторые активности требуют средней физической активности",
+    swimmingAbilityOptional: "Умение плавать (необязательно)",
+    lifeJacketsProvidedForWaterActivities: "Для водных активностей выдаются спасательные жилеты",
+    travelInsuranceRecommended: "Рекомендуется туристическая страховка",
+    weRecommendComprehensiveTravelInsurance: "Мы рекомендуем комплексную туристическую страховку",
+    whatToBring: "Что взять с собой",
+    comfortableClothing: "Удобная одежда",
+    layeredClothingForMountainWeather: "Многослойная одежда для переменчивой горной погоды",
+    swimwearAndBeachGear: "Купальники и пляжные принадлежности",
+    forLakeAndBeachActivities: "Для активностей на озере и отдыха на пляже",
+    sunProtection: "Защита от солнца",
+    sunscreenHatSunglassesForMountains: "Солнцезащитный крем, шляпа и очки для высокогорья",
+    comfortableWalkingShoes: "Удобная обувь для прогулок",
+    forWalkingAndOutdoorActivities: "Для пеших прогулок и активного отдыха на свежем воздухе",
+    personalMedications: "Личные лекарства",
+    necessaryPrescriptionOrPersonalMedications: "Необходимые рецептурные или личные лекарства",
+    termsAndConditions: "Условия и правила",
+    bookingAndPayment: "Бронирование и оплата",
+    fullPaymentRequiredAfterBookingConfirmation: "После подтверждения бронирования требуется полная оплата",
+    tourPackagesNonRefundable: "Турпакеты не подлежат возврату",
+    pricesMayVaryByGroupSizeAndSeason: "Цены могут меняться в зависимости от размера группы и сезона",
+    cancellationPolicy: "Политика отмены",
+    toursMayBeRescheduledIfNotEnoughParticipants: "Если участников недостаточно, туры могут быть перенесены",
+    weatherRelatedCancellationsRescheduled: "Отмены из-за погоды переносятся",
+    companyMayChangeRouteIfNecessary: "Компания оставляет за собой право изменить маршрут при необходимости",
+    accommodation: "Проживание",
+    hotelListMayChange: "Список отелей примерный и может меняться",
+    hotelsMayBeReplacedWithSimilarOrBetter: "Отели могут быть заменены на аналогичные или более высокого класса",
+    hotelsLocatedAlongTourRoute: "Отели расположены в районах маршрута тура",
+    liability: "Ответственность",
+    companyNotResponsibleForLostItems: "Компания не несет ответственности за утерянные или оставленные вещи",
+    helpFindingLostItems: "Помощь в поиске утерянных вещей",
+    participantsResponsibleForOwnSafety: "Участники несут личную ответственность за свою безопасность",
+    importantNote: "Важное примечание",
+    companyReservesRightToChangeProgramRouteDatesHotelsIfNotEnoughParticipants: "Компания оставляет за собой право вносить изменения в программу, маршрут, даты и время отправления, а также менять отели, указанные в программе. Если в группе недостаточно участников, тур может быть перенесен на другую доступную дату или отменен. Все участники должны иметь при себе паспорт на протяжении всего тура.",
+    instagram: "Инстаграм",
+    telegram: "Телеграм",
+    telegramGuruh: "Группа в Телеграм",
+    barchaHuquqlarHimoyalangan: "Все права защищены",
+    turlar: "Туры",
+    pasportTalabQilinadi: "Требуется паспорт",
+    // ... add more as needed ...
+  },
+};
+
+// Fix getTranslation types
+type Lang = keyof typeof translations;
+type TranslationKey = keyof (typeof translations)["uz"];
+function getTranslation(
+  lang: Lang,
+  key: TranslationKey,
+  params?: Record<string, string | number>
+): string {
+  let value = translations[lang][key] || translations.uz[key] || (key as string);
+  if (Array.isArray(value)) {
+    // If the translation is an array, join with ", " for display
+    return value.join(", ");
+  }
+  let str = value as string;
+  if (params) {
+    Object.entries(params).forEach(([k, v]) => {
+      str = str.replace(`{${k}}`, String(v));
+    });
+  }
+  return str;
+}
+
+function useCountdown(minutes = 15): string {
   const [timeLeft, setTimeLeft] = useState(minutes * 60);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      setTimeLeft((prev: number) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(interval);
@@ -46,467 +339,506 @@ function useCountdown(minutes = 15) {
   return `${minutesLeft}:${secondsLeft}`;
 }
 
+// Add types for i18n tour package fields
+
+type I18nString = { uz: string; ru: string };
+type I18nActivity = { uz: string; ru: string };
+type I18nHotel = { uz: string; ru: string };
+
+type TourItineraryDay = {
+  day: number;
+  title: I18nString;
+  activities: I18nActivity[];
+};
+
+type TourPackage = {
+  id: string;
+  title: I18nString;
+  duration: I18nString;
+  departure: I18nString;
+  departureTime: I18nString;
+  returnTime: I18nString;
+  priceJuly: number;
+  priceAugust: number;
+  hotels: I18nHotel[];
+  nights: number;
+  itinerary: TourItineraryDay[];
+};
+
 export default function IssykKulTour() {
   const countdown = useCountdown(15);
-  const tourPackages = [
+  const tourPackages: TourPackage[] = [
     {
       id: "2-day",
-      title: "Dam Olish Sayohati",
-      duration: "2 Kun / 1 Kecha",
-      departure: "Har Juma Kunlari",
-      departureTime: "18:00 - 19:00",
-      returnTime: "Dushanba 06:00",
+      title: { uz: "Dam Olish Sayohati", ru: "Тур для отдыха" },
+      duration: { uz: "2 Kun / 1 Kecha", ru: "2 дня / 1 ночь" },
+      departure: { uz: "Har Juma Kunlari", ru: "Каждую пятницу" },
+      departureTime: { uz: "18:00 - 19:00", ru: "18:00 - 19:00" },
+      returnTime: { uz: "Dushanba 06:00", ru: "Понедельник 06:00" },
       priceJuly: 180,
       priceAugust: 160,
-      hotels: ["ESAL Mehmonxona", "MANAS ATA Mehmonxona"],
+      hotels: [
+        { uz: "ESAL Mehmonxona", ru: "Отель ESAL" },
+        { uz: "MANAS ATA Mehmonxona", ru: "Отель MANAS ATA" }
+      ],
       nights: 1,
       itinerary: [
         {
           day: 1,
-          title: "Kelish va Kashf Etish",
+          title: { uz: "Kelish va Kashf Etish", ru: "Прибытие и знакомство" },
           activities: [
-            "Chegaradan o'tish (Qirg'iziston Respublikasi)",
-            "Valyuta almashtirish",
-            "Issiq Ko'lga tashrif",
-            "Cho'lpon-Ota bog'iga tashrif",
-            "Tushlik",
-            "Plyajda dam olish (18:00 gacha)",
-            "Qaynar buloqqa chiqish",
-            "Kechki ovqat",
-            "Diskoteka",
-          ],
+            { uz: "Chegaradan o'tish (Qirg'iziston Respublikasi)", ru: "Пересечение границы (Кыргызская Республика)" },
+            { uz: "Valyuta almashtirish", ru: "Обмен валюты" },
+            { uz: "Issiq Ko'lga tashrif", ru: "Посещение озера Иссык-Куль" },
+            { uz: "Cho'lpon-Ota bog'iga tashrif", ru: "Посещение парка Чолпон-Ата" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Plyajda dam olish (18:00 gacha)", ru: "Отдых на пляже (до 18:00)" },
+            { uz: "Qaynar buloqqa chiqish", ru: "Посещение горячих источников" },
+            { uz: "Kechki ovqat", ru: "Ужин" },
+            { uz: "Diskoteka", ru: "Дискотека" }
+          ]
         },
         {
           day: 2,
-          title: "Jo'nash Kuni",
+          title: { uz: "Jo'nash Kuni", ru: "День отъезда" },
           activities: [
-            "Nonushta",
-            "Plyajga chiqish",
-            "Mehmonxona xonalarini topshirish",
-            "Grigorievskoe darasi (ixtiyoriy)",
-            "Yoki plyajda qolish (teploxod vaqtigacha)",
-            "Teploxod sayohati",
-            "Bishkekdan jo'nash (19:00)",
-            "Toshkentga qaytish",
-          ],
-        },
-      ],
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Plyajga chiqish", ru: "Выход на пляж" },
+            { uz: "Mehmonxona xonalarini topshirish", ru: "Сдача номеров в отеле" },
+            { uz: "Grigorievskoe darasi (ixtiyoriy)", ru: "Григорьевское ущелье (по желанию)" },
+            { uz: "Yoki plyajda qolish (teploxod vaqtigacha)", ru: "Или остаться на пляже (до времени теплохода)" },
+            { uz: "Teploxod sayohati", ru: "Прогулка на теплоходе" },
+            { uz: "Bishkekdan jo'nash (19:00)", ru: "Отправление из Бишкека (19:00)" },
+            { uz: "Toshkentga qaytish", ru: "Возвращение в Ташкент" }
+          ]
+        }
+      ]
     },
     {
       id: "4-day",
-      title: "Klassik Tajriba",
-      duration: "4 Kun / 3 Kecha",
-      departure: "Har Chorshanba Kunlari",
-      departureTime: "18:00 - 19:00",
-      returnTime: "Dushanba 06:00",
+      title: { uz: "Klassik Tajriba", ru: "Классический опыт" },
+      duration: { uz: "4 Kun / 3 Kecha", ru: "4 дня / 3 ночи" },
+      departure: { uz: "Har Chorshanba Kunlari", ru: "Каждую среду" },
+      departureTime: { uz: "18:00 - 19:00", ru: "18:00 - 19:00" },
+      returnTime: { uz: "Dushanba 06:00", ru: "Понедельник 06:00" },
       priceJuly: 260,
       priceAugust: 240,
-      hotels: ["ESAL Mehmonxona", "AVGUST Mehmonxona"],
+      hotels: [
+        { uz: "ESAL Mehmonxona", ru: "Отель ESAL" },
+        { uz: "AVGUST Mehmonxona", ru: "Отель AVGUST" }
+      ],
       nights: 3,
       itinerary: [
         {
           day: 1,
-          title: "Kelish va Kutib Olish",
+          title: { uz: "Kelish va Kutib Olish", ru: "Прибытие и встреча" },
           activities: [
-            "Chegaradan o'tish (Qirg'iziston Respublikasi)",
-            "Valyuta almashtirish",
-            "Issiq Ko'lga tashrif",
-            "Mehmonxonaga joylashish",
-            "Tushlik",
-            "Bo'sh vaqt (Suzish yoki Plyaj)",
-            "Qaynar buloqqa chiqish",
-            "Kechki ovqat",
-            "Diskoteka",
-          ],
+            { uz: "Chegaradan o'tish (Qirg'iziston Respublikasi)", ru: "Пересечение границы (Кыргызская Республика)" },
+            { uz: "Valyuta almashtirish", ru: "Обмен валюты" },
+            { uz: "Issiq Ko'lga tashrif", ru: "Посещение озера Иссык-Куль" },
+            { uz: "Mehmonxonaga joylashish", ru: "Размещение в отеле" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Bo'sh vaqt (Suzish yoki Plyaj)", ru: "Свободное время (купание или пляж)" },
+            { uz: "Qaynar buloqqa chiqish", ru: "Посещение горячих источников" },
+            { uz: "Kechki ovqat", ru: "Ужин" },
+            { uz: "Diskoteka", ru: "Дискотека" }
+          ]
         },
         {
           day: 2,
-          title: "Tog' Sarguzashtlari",
+          title: { uz: "Tog' Sarguzashtlari", ru: "Горные приключения" },
           activities: [
-            "Nonushta",
-            "Tog'lar orasida sayohat (Grigorievskoe darasi)",
-            "Baliqchilik",
-            "Ot minish",
-            "Mahalliy taomlardan degustatsiya",
-            "Kvadratsikl",
-            "Mehmonxonada tushlik",
-            "Issiq ko'l bo'ylab kemada sayohat",
-            "Prezident bo'g'iga sayohat",
-            "Kechki ovqat va Dam olish",
-          ],
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Tog'lar orasida sayohat (Grigorievskoe darasi)", ru: "Экскурсия в горы (Григорьевское ущелье)" },
+            { uz: "Baliqchilik", ru: "Рыбалка" },
+            { uz: "Ot minish", ru: "Верховая езда" },
+            { uz: "Mahalliy taomlardan degustatsiya", ru: "Дегустация местных блюд" },
+            { uz: "Kvadratsikl", ru: "Квадроциклы" },
+            { uz: "Mehmonxonada tushlik", ru: "Обед в отеле" },
+            { uz: "Issiq ko'l bo'ylab kemada sayohat", ru: "Прогулка на катере по Иссык-Кулю" },
+            { uz: "Prezident bo'g'iga sayohat", ru: "Экскурсия в Президентский парк" },
+            { uz: "Kechki ovqat va Dam olish", ru: "Ужин и отдых" }
+          ]
         },
         {
           day: 3,
-          title: "Plyaj va Ko'ngilochar",
+          title: { uz: "Plyaj va Ko'ngilochar", ru: "Пляж и развлечения" },
           activities: [
-            "Nonushta",
-            "Plyaj kuni",
-            "Tushlik",
-            "Suv atraktsionlarida uchish",
-            "Kechki ovqat",
-            "Cho'lpon Ota bog'ida kechki sayr",
-            "Kechki ovqat",
-          ],
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Plyaj kuni", ru: "День на пляже" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Suv atraktsionlarida uchish", ru: "Водные аттракционы" },
+            { uz: "Kechki ovqat", ru: "Ужин" },
+            { uz: "Cho'lpon Ota bog'ida kechki sayr", ru: "Вечерняя прогулка в парке Чолпон-Ата" },
+            { uz: "Kechki ovqat", ru: "Ужин" }
+          ]
         },
         {
           day: 4,
-          title: "Jo'nash",
+          title: { uz: "Jo'nash", ru: "Отъезд" },
           activities: [
-            "Nonushta",
-            "Plyaj kuni",
-            "Issiq Ko'ldan chiqib ketish (12:00)",
-            "Bishkekdan chiqib ketish",
-            "Esdalik uchun suvenirlar olish",
-            "Chegaradan chiqib ketish",
-            "Uyga qaytish (22:00)",
-          ],
-        },
-      ],
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Plyaj kuni", ru: "День на пляже" },
+            { uz: "Issiq Ko'ldan chiqib ketish (12:00)", ru: "Выезд с Иссык-Куля (12:00)" },
+            { uz: "Bishkekdan chiqib ketish", ru: "Отправление из Бишкека" },
+            { uz: "Esdalik uchun suvenirlar olish", ru: "Покупка сувениров" },
+            { uz: "Chegaradan chiqib ketish", ru: "Пересечение границы" },
+            { uz: "Uyga qaytish (22:00)", ru: "Возвращение домой (22:00)" }
+          ]
+        }
+      ]
     },
     {
       id: "5-day",
-      title: "To'liq Sarguzasht",
-      duration: "5 Kun / 4 Kecha",
-      departure: "Har Shanba Kunlari",
-      departureTime: "18:00 - 19:00",
-      returnTime: "Juma 06:00",
+      title: { uz: "To'liq Sarguzasht", ru: "Полное приключение" },
+      duration: { uz: "5 Kun / 4 Kecha", ru: "5 дней / 4 ночи" },
+      departure: { uz: "Har Shanba Kunlari", ru: "Каждую субботу" },
+      departureTime: { uz: "18:00 - 19:00", ru: "18:00 - 19:00" },
+      returnTime: { uz: "Juma 06:00", ru: "Пятница 06:00" },
       priceJuly: 290,
       priceAugust: 270,
-      hotels: ["ESAL Mehmonxona", "AVGUST Mehmonxona"],
+      hotels: [
+        { uz: "ESAL Mehmonxona", ru: "Отель ESAL" },
+        { uz: "AVGUST Mehmonxona", ru: "Отель AVGUST" }
+      ],
       nights: 4,
       itinerary: [
         {
           day: 1,
-          title: "Kelish va Birinchi Taassurotlar",
+          title: { uz: "Kelish va Birinchi Taassurotlar", ru: "Прибытие и первые впечатления" },
           activities: [
-            "Chegaradan o'tish (Qirg'iziston Respublikasi)",
-            "Valyuta almashtirish",
-            "Issiq Ko'lga tashrif",
-            "Mehmonxonaga joylashish",
-            "Tushlik",
-            "Bo'sh vaqt (Suzish yoki Plyaj)",
-            "Qaynar buloqqa chiqish",
-            "Kechki ovqat",
-          ],
+            { uz: "Chegaradan o'tish (Qirg'iziston Respublikasi)", ru: "Пересечение границы (Кыргызская Республика)" },
+            { uz: "Valyuta almashtirish", ru: "Обмен валюты" },
+            { uz: "Issiq Ko'lga tashrif", ru: "Посещение озера Иссык-Куль" },
+            { uz: "Mehmonxonaga joylashish", ru: "Размещение в отеле" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Bo'sh vaqt (Suzish yoki Plyaj)", ru: "Свободное время (купание или пляж)" },
+            { uz: "Qaynar buloqqa chiqish", ru: "Посещение горячих источников" },
+            { uz: "Kechki ovqat", ru: "Ужин" }
+          ]
         },
         {
           day: 2,
-          title: "Tog' Sarguzashtlari",
+          title: { uz: "Tog' Sarguzashtlari", ru: "Горные приключения" },
           activities: [
-            "Nonushta",
-            "Tog'lar orasida sayohat (Grigorievskoe darasi)",
-            "Baliqchilik",
-            "Ot minish",
-            "Mahalliy taomlardan degustatsiya",
-            "Kvadratsikl",
-            "Mehmonxonada tushlik",
-            "Issiq ko'l bo'ylab kemada sayohat",
-            "Prezident bo'g'iga sayohat",
-            "Kechki ovqat va Dam olish",
-          ],
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Tog'lar orasida sayohat (Grigorievskoe darasi)", ru: "Экскурсия в горы (Григорьевское ущелье)" },
+            { uz: "Baliqchilik", ru: "Рыбалка" },
+            { uz: "Ot minish", ru: "Верховая езда" },
+            { uz: "Mahalliy taomlardan degustatsiya", ru: "Дегустация местных блюд" },
+            { uz: "Kvadratsikl", ru: "Квадроциклы" },
+            { uz: "Mehmonxonada tushlik", ru: "Обед в отеле" },
+            { uz: "Issiq ko'l bo'ylab kemada sayohat", ru: "Прогулка на катере по Иссык-Кулю" },
+            { uz: "Prezident bo'g'iga sayohat", ru: "Экскурсия в Президентский парк" },
+            { uz: "Kechki ovqat va Dam olish", ru: "Ужин и отдых" }
+          ]
         },
         {
           day: 3,
-          title: "Plyaj va Suv O'yinlari",
+          title: { uz: "Plyaj va Suv O'yinlari", ru: "Пляж и водные развлечения" },
           activities: [
-            "Nonushta",
-            "Plyaj kuni",
-            "Tushlik",
-            "Suv atraktsionlarida uchish",
-            "Kechki ovqat",
-            "Cho'lpon Ota bog'ida kechki sayr",
-            "Kechki ovqat",
-          ],
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Plyaj kuni", ru: "День на пляже" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Suv atraktsionlarida uchish", ru: "Водные аттракционы" },
+            { uz: "Kechki ovqat", ru: "Ужин" },
+            { uz: "Cho'lpon Ota bog'ida kechki sayr", ru: "Вечерняя прогулка в парке Чолпон-Ата" },
+            { uz: "Kechki ovqat", ru: "Ужин" }
+          ]
         },
         {
           day: 4,
-          title: "Dam Olish Kuni",
+          title: { uz: "Dam Olish Kuni", ru: "День отдыха" },
           activities: [
-            "Mehmonxonada nonushta",
-            "Plyajda dam olish",
-            "Tushlik",
-            "Kechki ovqat",
-          ],
+            { uz: "Mehmonxonada nonushta", ru: "Завтрак в отеле" },
+            { uz: "Plyajda dam olish", ru: "Отдых на пляже" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Kechki ovqat", ru: "Ужин" }
+          ]
         },
         {
           day: 5,
-          title: "Jo'nash",
+          title: { uz: "Jo'nash", ru: "Отъезд" },
           activities: [
-            "Nonushta",
-            "Plyaj kuni",
-            "Issiq Ko'ldan chiqib ketish (12:00)",
-            "Bishkekdan chiqib ketish",
-            "Esdalik uchun suvenirlar olish",
-            "Chegaradan chiqib ketish",
-            "Uyga qaytish (22:00)",
-          ],
-        },
-      ],
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Plyaj kuni", ru: "День на пляже" },
+            { uz: "Issiq Ko'ldan chiqib ketish (12:00)", ru: "Выезд с Иссык-Куля (12:00)" },
+            { uz: "Bishkekdan chiqib ketish", ru: "Отправление из Бишкека" },
+            { uz: "Esdalik uchun suvenirlar olish", ru: "Покупка сувениров" },
+            { uz: "Chegaradan chiqib ketish", ru: "Пересечение границы" },
+            { uz: "Uyga qaytish (22:00)", ru: "Возвращение домой (22:00)" }
+          ]
+        }
+      ]
     },
     {
       id: "7-day",
-      title: "Mukammal Dam Olish",
-      duration: "7 Kun / 6 Kecha",
-      departure: "Har Shanba Kunlari",
-      departureTime: "18:00 - 19:00",
-      returnTime: "Yakshanba 05:00",
+      title: { uz: "Mukammal Dam Olish", ru: "Идеальный отдых" },
+      duration: { uz: "7 Kun / 6 Kecha", ru: "7 дней / 6 ночей" },
+      departure: { uz: "Har Shanba Kunlari", ru: "Каждую субботу" },
+      departureTime: { uz: "18:00 - 19:00", ru: "18:00 - 19:00" },
+      returnTime: { uz: "Yakshanba 05:00", ru: "Воскресенье 05:00" },
       priceJuly: 370,
       priceAugust: 350,
-      hotels: ["ESAL Mehmonxona", "MANAS ATA Mehmonxona"],
+      hotels: [
+        { uz: "ESAL Mehmonxona", ru: "Отель ESAL" },
+        { uz: "MANAS ATA Mehmonxona", ru: "Отель MANAS ATA" }
+      ],
       nights: 6,
       itinerary: [
         {
           day: 1,
-          title: "Kelish va Kutib Olish",
+          title: { uz: "Kelish va Kutib Olish", ru: "Прибытие и встреча" },
           activities: [
-            "Chegaradan o'tish (Qirg'iziston Respublikasi)",
-            "Valyuta almashtirish",
-            "Issiq Ko'lga tashrif",
-            "Mehmonxonaga joylashish",
-            "Tushlik",
-            "Bo'sh vaqt (Suzish yoki Plyaj)",
-            "Qaynar buloqqa chiqish",
-            "Kechki ovqat",
-            "Kechki plyajda sayr",
-          ],
+            { uz: "Chegaradan o'tish (Qirg'iziston Respublikasi)", ru: "Пересечение границы (Кыргызская Республика)" },
+            { uz: "Valyuta almashtirish", ru: "Обмен валюты" },
+            { uz: "Issiq Ko'lga tashrif", ru: "Посещение озера Иссык-Куль" },
+            { uz: "Mehmonxonaga joylashish", ru: "Размещение в отеле" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Bo'sh vaqt (Suzish yoki Plyaj)", ru: "Свободное время (купание или пляж)" },
+            { uz: "Qaynar buloqqa chiqish", ru: "Посещение горячих источников" },
+            { uz: "Kechki ovqat", ru: "Ужин" },
+            { uz: "Kechki plyajda sayr", ru: "Вечерняя прогулка по пляжу" }
+          ]
         },
         {
           day: 2,
-          title: "Madaniyat va Kruiz",
+          title: { uz: "Madaniyat va Kruiz", ru: "Культура и круиз" },
           activities: [
-            "Nonushta",
-            "Plyajda dam olish",
-            "Tushlik",
-            "Teploxodda sayr",
-            "Kechki ovqat",
-            "Prezident bo'g'iga sayohat",
-            "Diskoteka",
-          ],
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Plyajda dam olish", ru: "Отдых на пляже" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Teploxodda sayr", ru: "Прогулка на теплоходе" },
+            { uz: "Kechki ovqat", ru: "Ужин" },
+            { uz: "Prezident bo'g'iga sayohat", ru: "Экскурсия в Президентский парк" },
+            { uz: "Diskoteka", ru: "Дискотека" }
+          ]
         },
         {
           day: 3,
-          title: "Tabiat va Sarguzasht",
+          title: { uz: "Tabiat va Sarguzasht", ru: "Природа и приключения" },
           activities: [
-            "Nonushta",
-            "Daralarga sayohat",
-            "Ot minish",
-            "Sharshara ko'rish",
-            "Forel balig'idan degustatsiya",
-            "Baliqchilik",
-            "Kvadratsikl",
-            "Mehmonxonada tushlik",
-            "Erkin vaqt",
-            "Plyaj",
-            "Kechki ovqat",
-          ],
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Daralarga sayohat", ru: "Экскурсия по ущельям" },
+            { uz: "Ot minish", ru: "Верховая езда" },
+            { uz: "Sharshara ko'rish", ru: "Посещение водопада" },
+            { uz: "Forel balig'idan degustatsiya", ru: "Дегустация форели" },
+            { uz: "Baliqchilik", ru: "Рыбалка" },
+            { uz: "Kvadratsikl", ru: "Квадроциклы" },
+            { uz: "Mehmonxonada tushlik", ru: "Обед в отеле" },
+            { uz: "Erkin vaqt", ru: "Свободное время" },
+            { uz: "Plyaj", ru: "Пляж" },
+            { uz: "Kechki ovqat", ru: "Ужин" }
+          ]
         },
         {
           day: 4,
-          title: "Sof Dam Olish",
+          title: { uz: "Sof Dam Olish", ru: "День полного отдыха" },
           activities: [
-            "Mehmonxonada nonushta",
-            "Plyajda dam olish",
-            "Tushlik",
-            "Kechki ovqat",
-          ],
+            { uz: "Mehmonxonada nonushta", ru: "Завтрак в отеле" },
+            { uz: "Plyajda dam olish", ru: "Отдых на пляже" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Kechki ovqat", ru: "Ужин" }
+          ]
         },
         {
           day: 5,
-          title: "Plyaj Kuni",
+          title: { uz: "Plyaj Kuni", ru: "День на пляже" },
           activities: [
-            "Mehmonxonada nonushta",
-            "Plyajda dam olish",
-            "Tushlik",
-            "Kechki ovqat",
-          ],
+            { uz: "Mehmonxonada nonushta", ru: "Завтрак в отеле" },
+            { uz: "Plyajda dam olish", ru: "Отдых на пляже" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Kechki ovqat", ru: "Ужин" }
+          ]
         },
         {
           day: 6,
-          title: "Oxirgi Plyaj Kuni",
+          title: { uz: "Oxirgi Plyaj Kuni", ru: "Последний день на пляже" },
           activities: [
-            "Mehmonxonada nonushta",
-            "Plyajda dam olish",
-            "Tushlik",
-            "Kechki ovqat",
-          ],
+            { uz: "Mehmonxonada nonushta", ru: "Завтрак в отеле" },
+            { uz: "Plyajda dam olish", ru: "Отдых на пляже" },
+            { uz: "Tushlik", ru: "Обед" },
+            { uz: "Kechki ovqat", ru: "Ужин" }
+          ]
         },
         {
           day: 7,
-          title: "Jo'nash",
+          title: { uz: "Jo'nash", ru: "Отъезд" },
           activities: [
-            "Nonushta",
-            "Issiq Ko'ldan chiqib ketish (12:00)",
-            "Esdalik uchun suvenirlar olish",
-            "Chegaradan chiqib ketish",
-            "Shimkentga kelish (19:00)",
-          ],
-        },
-      ],
-    },
+            { uz: "Nonushta", ru: "Завтрак" },
+            { uz: "Issiq Ko'ldan chiqib ketish (12:00)", ru: "Выезд с Иссык-Куля (12:00)" },
+            { uz: "Esdalik uchun suvenirlar olish", ru: "Покупка сувениров" },
+            { uz: "Chegaradan chiqib ketish", ru: "Пересечение границы" },
+            { uz: "Shimkentga kelish (19:00)", ru: "Прибытие в Шымкент (19:00)" }
+        ]
+      }
+    ]
+  }
   ];
 
   const included = [
     "Borish kelish transport",
     "Spalniy avtobus",
-    "Gid hizmati yo’l boshlovchi",
+    "Gid hizmati yo'l boshlovchi",
     "Mehmonxona turar joyi",
     "Kuniga 3 marta ovqatlanish",
     "Professional gid",
     "Barcha transferlar",
     "Yaxta kruizi",
     "Qaynar buloqqa kirish",
-    "Grigorskiy tog’lariga sayohat",
+    "Grigorskiy tog'lariga sayohat",
     "Har hil plyajlarga olib borish",
   ];
 
   const notIncluded = [
     "Ko'ngilochar xizmatlar",
     "Forel baliqchiligi",
-    "Yo’lda ovqatlanish",
+    "Yo'lda ovqatlanish",
     "Suv ateraksionlaridan foydalanish:4$-20$",
-    "Tog’da kvadratsikl uchish:5$",
+    "Tog'da kvadratsikl uchish:5$",
     "Farel baliqlari bilan taomlanish:1kg 15$",
     "Ot minish:5$",
     "Burgut bilan rasmga tushish:3$",
   ];
 
+  // Refactor gallery arrays for i18n
   const landscapeImages = [
-    { src: "/images/foto1.jpg", alt: "Issiq Ko'lning toza suvlari" },
-    { src: "/images/foto2.jpg", alt: "Issiq Ko'lning toza suvlari" },
-    // { src: "/images/lake-view-2.jpg", alt: "Ko'lda tog'larning aksi" },
-    { src: "/images/foto3.jpg", alt: "Issiq Ko'lning toza suvlari" },
-    { src: "/images/foto4.jpg", alt: "Ulug'vor tog' tizmalari" },
-    { src: "/images/foto5.jpg", alt: "Ulug'vor tog' tizmalari" },
-    { src: "/images/foto6.jpg", alt: "Ulug'vor tog' tizmalari" },
-    { src: "/images/foto7.jpg", alt: "Qor bilan qoplangan cho'qqilar" },
-    { src: "/images/foto8.jpg", alt: "Billur toza ko'l suvlari" },
-    // { src: "/images/mountains-3.jpg", alt: "Dramatik tog' manzaralari" },
-    { src: "/images/lake-view-4.jpg", alt: "Issiq Ko'lda quyosh botishi" },
-    { src: "/images/mountains-2.jpg", alt: "Alp manzaralari" },
+    { src: "/images/foto1.jpg", alt: { uz: "Issiq Ko'lning toza suvlari", ru: "Чистые воды Иссык-Куля" } },
+    { src: "/images/foto2.jpg", alt: { uz: "Issiq Ko'lning toza suvlari", ru: "Чистые воды Иссык-Куля" } },
+    { src: "/images/foto3.jpg", alt: { uz: "Issiq Ko'lning toza suvlari", ru: "Чистые воды Иссык-Куля" } },
+    { src: "/images/foto4.jpg", alt: { uz: "Ulug'vor tog' tizmalari", ru: "Величественные горные хребты" } },
+    { src: "/images/foto5.jpg", alt: { uz: "Ulug'vor tog' tizmalari", ru: "Величественные горные хребты" } },
+    { src: "/images/foto6.jpg", alt: { uz: "Ulug'vor tog' tizmalari", ru: "Величественные горные хребты" } },
+    { src: "/images/foto7.jpg", alt: { uz: "Qor bilan qoplangan cho'qqilar", ru: "Заснеженные вершины" } },
+    { src: "/images/foto8.jpg", alt: { uz: "Billur toza ko'l suvlari", ru: "Кристально чистые воды озера" } },
+    { src: "/images/lake-view-4.jpg", alt: { uz: "Issiq Ko'lda quyosh botishi", ru: "Закат на Иссык-Куле" } },
+    { src: "/images/mountains-2.jpg", alt: { uz: "Alp manzaralari", ru: "Альпийские пейзажи" } },
   ];
 
   const activityImages = [
     {
       src: "/images/activities/horse-riding.png",
-      alt: "Ot Minish",
-      title: "Ot Minish",
+      alt: { uz: "Ot Minish", ru: "Верховая езда" },
+      title: { uz: "Ot Minish", ru: "Верховая езда" },
     },
     {
       src: "/images/foto2.jpg",
-      alt: "Sohil(plyaj)",
-      title: "Sohil(plyaj)",
+      alt: { uz: "Sohil(plyaj)", ru: "Пляж" },
+      title: { uz: "Sohil(plyaj)", ru: "Пляж" },
     },
     {
       src: "/quadracycle.png",
-      alt: "Kvadratsikl",
-      title: "Kvadratsikl",
+      alt: { uz: "Kvadratsikl", ru: "Квадроцикл" },
+      title: { uz: "Kvadratsikl", ru: "Квадроцикл" },
     },
     {
       src: "/images/activities/boat-cruise.png",
-      alt: "Qayiq Kruizi",
-      title: "Qayiq Kruizi",
+      alt: { uz: "Qayiq Kruizi", ru: "Прогулка на лодке" },
+      title: { uz: "Qayiq Kruizi", ru: "Прогулка на лодке" },
     },
-    // { src: "/images/hot-springs.jpg", alt: "Qaynar Buloqlar", title: "Qaynar Buloqlar" },
     {
       src: "/swing.png",
-      alt: "Arg`imchoqlar",
-      title: "Arg`imchoqlar",
+      alt: { uz: "Arg`imchoqlar", ru: "Качели" },
+      title: { uz: "Arg`imchoqlar", ru: "Качели" },
     },
-    // { src: "/images/water-sports.jpg", alt: "Suv Sporti", title: "Suv Sporti" },
-    // { src: "/images/mountain-hiking.jpg", alt: "Tog'ga Chiqish", title: "Tog'ga Chiqish" },
     {
       src: "/images/activities/bitch.png",
-      alt: "Plyaj Faoliyatlari",
-      title: "Plyaj Faoliyatlari",
+      alt: { uz: "Plyaj Faoliyatlari", ru: "Пляжные активности" },
+      title: { uz: "Plyaj Faoliyatlari", ru: "Пляжные активности" },
     },
   ];
 
   const hotelImages = [
     {
       src: "/images/esal-hotel.jpg",
-      name: "ESAL Mehmonxona",
-      features: "Ko'l bo'yidagi xonalar, Zamonaviy qulayliklar",
+      name: { uz: "ESAL Mehmonxona", ru: "Отель ESAL" },
+      features: { uz: "Ko'l bo'yidagi xonalar, Zamonaviy qulayliklar", ru: "Номера у озера, современные удобства" },
     },
     {
       src: "/images/avgust-hotel.jpg",
-      name: "AVGUST Mehmonxona",
-      features: "Premium qulaylik, Ajoyib joylashuv",
+      name: { uz: "AVGUST Mehmonxona", ru: "Отель AVGUST" },
+      features: { uz: "Premium qulaylik, Ajoyib joylashuv", ru: "Премиум комфорт, отличное расположение" },
     },
     {
       src: "/images/manas-ata-hotel.jpg",
-      name: "MANAS ATA Mehmonxona",
-      features: "An'anaviy uslub, A'lo xizmat",
+      name: { uz: "MANAS ATA Mehmonxona", ru: "Отель MANAS ATA" },
+      features: { uz: "An'anaviy uslub, A'lo xizmat", ru: "Традиционный стиль, отличный сервис" },
     },
   ];
 
   const foodImages = [
-    { src: "/images/dishes/manti.png", alt: "Manti", title: "Manti" },
-    {
-      src: "/images/dishes/beshbarmak.png",
-      alt: "Beshbarmoq",
-      title: "Beshbarmoq",
-    },
-    // { src: "/images/dishes/boortsog.png", alt: "Bo`vursoq", title: "Bo`vursoq" },
-    // { src: "/images/mountain-honey.jpg", alt: "Tog' Asali", title: "Tog' Asali" },
-    // { src: "/images/dairy-products.jpg", alt: "Sut Mahsulotlari", title: "Sut Mahsulotlari" },
-    // { src: "/images/grilled-meat.jpg", alt: "Panjara Go'sht", title: "Panjara Go'sht" },
-    // { src: "/images/local-fruits.jpg", alt: "Mahalliy Mevalar", title: "Mahalliy Mevalar" },
-    // { src: "/images/tea-culture.jpg", alt: "Choy Madaniyati", title: "Choy Madaniyati" },
+    { src: "/images/dishes/manti.png", alt: { uz: "Manti", ru: "Манты" }, title: { uz: "Manti", ru: "Манты" } },
+    { src: "/images/dishes/beshbarmak.png", alt: { uz: "Beshbarmoq", ru: "Бешбармак" }, title: { uz: "Beshbarmoq", ru: "Бешбармак" } },
   ];
 
   const memoryImages = [
     {
       src: "/images/sunset-lake.jpg",
-      title: "Ko'lda Quyosh Botishi",
-      description: "Issiq Ko'lda oltin soat sehri",
+      title: { uz: "Ko'lda Quyosh Botishi", ru: "Закат на озере" },
+      description: { uz: "Issiq Ko'lda oltin soat sehri", ru: "Магия золотого часа на Иссык-Куле" },
     },
     {
       src: "/images/group-adventures.jpg",
-      title: "Guruh Sarguzashtlari",
-      description: "Dunyo bo'ylab do'stlar orttirish",
+      title: { uz: "Guruh Sarguzashtlari", ru: "Групповые приключения" },
+      description: { uz: "Dunyo bo'ylab do'stlar orttirish", ru: "Завести друзей со всего мира" },
     },
     {
       src: "/images/cultural-exchange.jpg",
-      title: "Madaniy Almashish",
-      description: "Qirg'iz an'analarini o'rganish",
+      title: { uz: "Madaniy Almashish", ru: "Культурный обмен" },
+      description: { uz: "Qirg'iz an'analarini o'rganish", ru: "Знакомство с традициями Кыргызстана" },
     },
-    // {
-    //   src: "/images/mountain-peaks.jpg",
-    //   title: "Tog' Cho'qqilari",
-    //   description: "Daralardan hayratlanarli manzaralar",
-    // },
     {
       src: "/images/beach-relaxation.jpg",
-      title: "Plyajda Dam Olish",
-      description: "Suv yonida mukammal lahzalar",
+      title: { uz: "Plyajda Dam Olish", ru: "Отдых на пляже" },
+      description: { uz: "Suv yonida mukammal lahzalar", ru: "Идеальные моменты у воды" },
     },
     {
       src: "/images/local-markets.jpg",
-      title: "Mahalliy Bozorlar",
-      description: "Asl suvenirlar xarid qilish",
+      title: { uz: "Mahalliy Bozorlar", ru: "Местные рынки" },
+      description: { uz: "Asl suvenirlar xarid qilish", ru: "Покупка настоящих сувениров" },
     },
   ];
 
   const videos = [
     {
       src: "/videos/lake-views.mp4",
-      title: "Billur Toza Suvlar",
-      description: "Issiq Ko'lning toza suvlarining ajoyib havo manzaralari",
+      title: { uz: "Billur Toza Suvlar", ru: "Кристально чистые воды" },
+      description: { uz: "Issiq Ko'lning toza suvlarining ajoyib havo manzaralari", ru: "Потрясающие виды с воздуха на чистые воды Иссык-Куля" },
       thumbnail: "/images/lake-view-1.jpg",
     },
     {
       src: "/videos/mountain-adventures.mp4",
-      title: "Tog' Sarguzashtlari",
-      description: "Ot minish va kvadratsikl sarguzashtlari",
+      title: { uz: "Tog' Sarguzashtlari", ru: "Горные приключения" },
+      description: { uz: "Ot minish va kvadratsikl sarguzashtlari", ru: "Верховая езда и приключения на квадроциклах" },
       thumbnail: "/images/mountains-1.jpg",
     },
     {
       src: "/videos/cultural-experiences.mp4",
-      title: "Madaniy Tajribalar",
-      description: "Mahalliy taomlarni tatib ko'rish va madaniy faoliyatlar",
+      title: { uz: "Madaniy Tajribalar", ru: "Культурные впечатления" },
+      description: { uz: "Mahalliy taomlarni tatib ko'rish va madaniy faoliyatlar", ru: "Дегустация местных блюд и культурные мероприятия" },
       thumbnail: "/images/cultural-exchange.jpg",
     },
   ];
+
+  // Language state with localStorage persistence
+  const [lang, setLang] = useState<Lang>("uz");
+  // On mount, set lang from localStorage if available
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedLang = localStorage.getItem("lang") as Lang;
+      if (storedLang && storedLang !== lang) {
+        setLang(storedLang);
+      }
+    }
+    // eslint-disable-next-line
+  }, []); // Only run once on mount
+
+  // Whenever lang changes, update localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("lang", lang);
+    }
+  }, [lang]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -533,6 +865,19 @@ export default function IssykKulTour() {
                 <Mail className="h-4 w-4 text-blue-600" />
                 <span>moviytravel@gmail.com</span>
               </div>
+              {/* Language Select Dropdown */}
+              <div className="flex items-center space-x-2">
+                <span>{getTranslation(lang, "language")}:</span>
+                <Select value={lang} onValueChange={value => setLang(value as Lang)}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="uz">{getTranslation(lang, "uzbek")}</SelectItem>
+                    <SelectItem value="ru">{getTranslation(lang, "russian")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
@@ -550,7 +895,7 @@ export default function IssykKulTour() {
         <div className="relative container mx-auto px-4 h-full flex items-center">
           <div>
             <Badge className="mb-4 bg-white/20 text-white border-white/30">
-              Bir Nechta Tur Variantlari Mavjud
+              {getTranslation(lang, "availableTours")}
             </Badge>
             <h1
               className="text-5xl bg-[#00c9c7]/80 font-bold mb-6"
@@ -560,7 +905,7 @@ export default function IssykKulTour() {
                 borderRadius: "5px",
               }}
             >
-              Issiq Ko'lni Kashf Eting
+              {getTranslation(lang, "discoverIssykKul")}
             </h1>
             <span
               style={{
@@ -571,7 +916,7 @@ export default function IssykKulTour() {
               }}
               className="5block text-3xl  mb-2  bg-[#00c9c7]/80 text-blue-200 mt-2"
             >
-              O'zingizga Mos Sarguzashtni Tanlang
+              {getTranslation(lang, "chooseAdventure")}
             </span>
             <p
               style={{
@@ -582,16 +927,14 @@ export default function IssykKulTour() {
               }}
               className="text-xl bg-[#00c9c7]/80 mb-8 text-white "
             >
-              Dam olish sayohatlaridan tortib to mukammal dam olish
-              paketlarigacha - O'rta Osiyoning marvaridini bizning moslashuvchan
-              tur variantlarimiz bilan his eting.
+              {getTranslation(lang, "heroDesc")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
                 className="bg-white text-blue-600 hover:bg-blue-50"
               >
-                Turlarni Ko'rish - $180 dan
+                {getTranslation(lang, "viewTours")}
               </Button>
               <Button
                 size="lg"
@@ -601,7 +944,7 @@ export default function IssykKulTour() {
               >
                 <a href="tel:+998991244214">
                   <Phone className="h-4 w-4 mr-2" />
-                  Turingizni Bron Qiling
+                  {getTranslation(lang, "bookTour")}
                 </a>
               </Button>
             </div>
@@ -614,11 +957,10 @@ export default function IssykKulTour() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Mukammal Turingizni Tanlang
+              {getTranslation(lang, "selectPerfectTour")}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Issiq Ko'lda noyob tajribalar taqdim etish uchun ehtiyotkorlik
-              bilan yaratilgan tur paketlarimizdan birini tanlang.
+              {getTranslation(lang, "selectPerfectTourDesc")}
             </p>
           </div>
 
@@ -626,7 +968,7 @@ export default function IssykKulTour() {
             <TabsList className="grid w-full grid-cols-4 mb-8">
               {tourPackages.map((tour) => (
                 <TabsTrigger key={tour.id} value={tour.id}>
-                  {tour.duration.split(" ")[0]} Kun
+                  {tour.duration[lang].split(" ")[0]} {getTranslation(lang, "day")}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -638,24 +980,24 @@ export default function IssykKulTour() {
                   <div className="lg:col-span-1">
                     <Card className="h-fit">
                       <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-                        <CardTitle className="text-2xl">{tour.title}</CardTitle>
+                        <CardTitle className="text-2xl">{tour.title[lang]}</CardTitle>
                         <CardDescription className="text-blue-100">
-                          {tour.duration}
+                          {tour.duration[lang]}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="pt-6 space-y-4">
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm">{tour.departure}</span>
+                          <span className="text-sm">{tour.departure[lang]}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Clock className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm">{tour.departureTime}</span>
+                          <span className="text-sm">{tour.departureTime[lang]}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <MapPin className="h-4 w-4 text-blue-600" />
                           <span className="text-sm">
-                            Qaytish: {tour.returnTime}
+                            {getTranslation(lang, "return")}: {tour.returnTime[lang]}
                           </span>
                         </div>
 
@@ -666,7 +1008,7 @@ export default function IssykKulTour() {
                               {/* Iyul */}
                               <div className="bg-blue-50 px-4 py-2 rounded-md shadow w-full sm:w-auto">
                                 <div className="text-sm text-gray-500 mb-1">
-                                  Iyul
+                                  {getTranslation(lang, "july")}
                                 </div>
                                 <div className="flex justify-center items-end space-x-2">
                                   <span className="text-gray-400 line-through text-lg">
@@ -677,14 +1019,14 @@ export default function IssykKulTour() {
                                   </span>
                                 </div>
                                 <div className="text-xs text-green-500">
-                                  Aksiya narxi
+                                  {getTranslation(lang, "promoPrice")}
                                 </div>
                               </div>
 
                               {/* Avgust */}
                               <div className="bg-orange-50 px-4 py-2 rounded-md shadow w-full sm:w-auto">
                                 <div className="text-sm text-gray-500 mb-1">
-                                  Avgust
+                                  {getTranslation(lang, "august")}
                                 </div>
                                 <div className="flex justify-center items-end space-x-2">
                                   <span className="text-gray-400 line-through text-lg">
@@ -695,7 +1037,7 @@ export default function IssykKulTour() {
                                   </span>
                                 </div>
                                 <div className="text-xs text-green-500">
-                                  Aksiya narxi
+                                  {getTranslation(lang, "promoPrice")}
                                 </div>
                               </div>
                             </div>
@@ -704,11 +1046,11 @@ export default function IssykKulTour() {
                             <div className="mt-2">
                               {countdown !== "00:00" ? (
                                 <div className="inline-block bg-red-100 text-red-700 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
-                                  Aksiya tugashiga {countdown} qoldi!
+                                  {getTranslation(lang, "promoEndsIn", { time: countdown })}
                                 </div>
                               ) : (
                                 <div className="inline-block bg-gray-100 text-gray-600 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
-                                  Aksiya muddati tugadi
+                                  {getTranslation(lang, "promoEnded")}
                                 </div>
                               )}
                             </div>
@@ -720,14 +1062,14 @@ export default function IssykKulTour() {
                           >
                             <a href="tel:+998991244214">
                               <Phone className="h-4 w-4 mr-2" />
-                              {tour.title} Bron Qilish
+                              {getTranslation(lang, "bookTour")} {tour.title[lang]}
                             </a>
                           </Button>
                         </div>
 
                         {/* Mehmonxonalar */}
                         <div className="border-t pt-4">
-                          <h4 className="font-semibold mb-2">Mehmonxonalar:</h4>
+                          <h4 className="font-semibold mb-2">{getTranslation(lang, "hotels")}:</h4>
                           <ul className="text-sm text-gray-600 space-y-1">
                             {tour.hotels.map((hotel, index) => (
                               <li
@@ -735,7 +1077,7 @@ export default function IssykKulTour() {
                                 className="flex items-center space-x-2"
                               >
                                 <CheckCircle className="h-3 w-3 text-green-500" />
-                                <span>{hotel}</span>
+                                <span>{hotel[lang]}</span>
                               </li>
                             ))}
                           </ul>
@@ -748,9 +1090,9 @@ export default function IssykKulTour() {
                   <div className="lg:col-span-2">
                     <Card>
                       <CardHeader>
-                        <CardTitle>Kun-Kunlik Dastur</CardTitle>
+                        <CardTitle>{getTranslation(lang, "dayProgram")}</CardTitle>
                         <CardDescription>
-                          {tour.duration} sarguzashtingiz uchun batafsil jadval
+                          {getTranslation(lang, "dayProgramDesc", { duration: tour.duration[lang] })}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-6">
@@ -764,7 +1106,7 @@ export default function IssykKulTour() {
                                 {day.day}
                               </div>
                               <h3 className="font-semibold text-lg">
-                                {day.title}
+                                {day.title[lang]}
                               </h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -775,7 +1117,7 @@ export default function IssykKulTour() {
                                 >
                                   <Star className="h-3 w-3 text-blue-600 flex-shrink-0" />
                                   <span className="text-sm text-gray-700">
-                                    {activity}
+                                    {activity[lang]}
                                   </span>
                                 </div>
                               ))}
@@ -797,19 +1139,19 @@ export default function IssykKulTour() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Barcha Paketlarni Solishtiring
+              {getTranslation(lang, "compareAll")}
             </h2>
             <p className="text-gray-600">
-              Barcha tur variantlarimizning qisqacha ko'rinishi
+              {getTranslation(lang, "compareAllDesc")}
             </p>
             <div className="mt-2">
               {countdown !== "00:00" ? (
                 <div className="inline-block bg-red-100 text-red-700 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
-                  Aksiya tugashiga {countdown} qoldi!
+                  {getTranslation(lang, "promoEndsIn", { time: countdown })}
                 </div>
               ) : (
                 <div className="inline-block bg-gray-100 text-gray-600 text-sm px-4 py-1 rounded-full font-medium shadow-sm">
-                  Aksiya muddati tugadi
+                  {getTranslation(lang, "promoEnded")}
                 </div>
               )}
             </div>
@@ -821,8 +1163,8 @@ export default function IssykKulTour() {
                 className="text-center hover:shadow-lg transition-shadow"
               >
                 <CardHeader>
-                  <CardTitle className="text-lg">{tour.title}</CardTitle>
-                  <CardDescription>{tour.duration}</CardDescription>
+                  <CardTitle className="text-lg">{tour.title[lang]}</CardTitle>
+                  <CardDescription>{tour.duration[lang]}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -835,15 +1177,15 @@ export default function IssykKulTour() {
                       </span>
                     </div>
                     <div className="text-sm text-gray-600">
-                      {tour.departure}
+                      {tour.departure[lang]}
                     </div>
                     <div className="text-sm text-gray-600">
-                      {tour.nights} kecha
+                      {tour.nights} {getTranslation(lang, "night")}
                     </div>
                     <Button size="sm" className="w-full mt-4" asChild>
                       <a href="tel:+998991244214">
                         <Phone className="h-4 w-4 mr-2" />
-                        Tanlash
+                        {getTranslation(lang, "select")}
                       </a>
                     </Button>
                   </div>
@@ -859,12 +1201,10 @@ export default function IssykKulTour() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Tur Xotiralari
+              {getTranslation(lang, "tourMemories")}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Sayohatchilarimizning ko'zlari orqali Issiq Ko'lning sehrini his
-              eting. Hayratlanarli manzaralar, qiziqarli faoliyatlar va
-              turlarimizdan unutilmas lahzalarni ko'ring.
+              {getTranslation(lang, "tourMemoriesDesc")}
             </p>
           </div>
 
@@ -902,17 +1242,17 @@ export default function IssykKulTour() {
           {/* Photo Gallery */}
           <div>
             <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">
-              Foto Galereya
+              {getTranslation(lang, "photoGallery")}
             </h3>
 
             {/* Gallery Categories */}
             <Tabs defaultValue="landscapes" className="w-full">
               <TabsList className="grid w-full grid-cols-5 mb-8">
-                <TabsTrigger value="landscapes">Manzaralar</TabsTrigger>
-                <TabsTrigger value="activities">Faoliyatlar</TabsTrigger>
-                <TabsTrigger value="hotels">Mehmonxonalar</TabsTrigger>
-                <TabsTrigger value="food">Mahalliy Taomlar</TabsTrigger>
-                <TabsTrigger value="memories">Xotiralar</TabsTrigger>
+                <TabsTrigger value="landscapes">{getTranslation(lang, "landscapes")}</TabsTrigger>
+                <TabsTrigger value="activities">{getTranslation(lang, "activities")}</TabsTrigger>
+                <TabsTrigger value="hotels">{getTranslation(lang, "hotels")}</TabsTrigger>
+                <TabsTrigger value="food">{getTranslation(lang, "food")}</TabsTrigger>
+                <TabsTrigger value="memories">{getTranslation(lang, "memories")}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="landscapes">
@@ -925,7 +1265,7 @@ export default function IssykKulTour() {
                       <div className="relative aspect-square">
                         <img
                           src={image.src || "/placeholder.svg"}
-                          alt={image.alt}
+                          alt={image.alt[lang]}
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -947,7 +1287,7 @@ export default function IssykKulTour() {
                       <div className="relative aspect-square">
                         <img
                           src={activity.src || "/placeholder.svg"}
-                          alt={activity.alt}
+                          alt={activity.alt[lang]}
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -955,7 +1295,7 @@ export default function IssykKulTour() {
                         </div>
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                           <p className="text-white text-sm font-medium">
-                            {activity.title}
+                            {activity.title[lang]}
                           </p>
                         </div>
                       </div>
@@ -974,14 +1314,14 @@ export default function IssykKulTour() {
                       <div className="relative aspect-video">
                         <img
                           src={hotel.src || "/placeholder.svg"}
-                          alt={hotel.name}
+                          alt={hotel.name[lang]}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <CardContent className="p-4">
-                        <h4 className="font-semibold mb-1">{hotel.name}</h4>
+                        <h4 className="font-semibold mb-1">{hotel.name[lang]}</h4>
                         <p className="text-sm text-gray-600">
-                          {hotel.features}
+                          {hotel.features[lang]}
                         </p>
                       </CardContent>
                     </Card>
@@ -999,7 +1339,7 @@ export default function IssykKulTour() {
                       <div className="relative aspect-square">
                         <img
                           src={food.src || "/placeholder.svg"}
-                          alt={food.alt}
+                          alt={food.alt[lang]}
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -1007,7 +1347,7 @@ export default function IssykKulTour() {
                         </div>
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
                           <p className="text-white text-sm font-medium">
-                            {food.title}
+                            {food.title[lang]}
                           </p>
                         </div>
                       </div>
@@ -1026,16 +1366,16 @@ export default function IssykKulTour() {
                       <div className="relative aspect-video">
                         <img
                           src={memory.src || "/placeholder.svg"}
-                          alt={memory.title}
+                          alt={memory.title[lang]}
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                         <div className="absolute bottom-0 left-0 right-0 p-4">
                           <h4 className="text-white font-semibold mb-1">
-                            {memory.title}
+                            {memory.title[lang]}
                           </h4>
                           <p className="text-white/90 text-sm">
-                            {memory.description}
+                            {memory.description[lang]}
                           </p>
                         </div>
                       </div>
@@ -1053,10 +1393,10 @@ export default function IssykKulTour() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Nima Kiritilgan
+              {getTranslation(lang, "included")}
             </h2>
             <p className="text-gray-600">
-              Barcha paketlar ushbu muhim xizmatlarni o'z ichiga oladi
+              {getTranslation(lang, "includedDesc")}
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
@@ -1064,12 +1404,12 @@ export default function IssykKulTour() {
               <CardHeader>
                 <CardTitle className="text-green-600 flex items-center">
                   <CheckCircle className="h-5 w-5 mr-2" />
-                  Barcha Paketlarga Kiritilgan
+                  {getTranslation(lang, "barchaPaketlargaKiritilgan")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  {included.map((item, index) => (
+                  {translations[lang].includedList.map((item, index) => (
                     <li key={index} className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                       <span className="text-gray-700">{item}</span>
@@ -1082,12 +1422,12 @@ export default function IssykKulTour() {
               <CardHeader>
                 <CardTitle className="text-orange-600 flex items-center">
                   <Camera className="h-5 w-5 mr-2" />
-                  Shaxsiy xarajatlariz
+                  {getTranslation(lang, "shaxsiyXarajatlari")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  {notIncluded.map((item, index) => (
+                  {translations[lang].notIncludedList.map((item, index) => (
                     <li key={index} className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                       <span className="text-gray-700">{item}</span>
@@ -1105,11 +1445,10 @@ export default function IssykKulTour() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Tur Talablari va Shartlari
+              {getTranslation(lang, "requirements")}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Tur tajribangiz xavfsiz, qulay va esda qolarli bo'lishini
-              ta'minlash uchun muhim ma'lumotlar.
+              {getTranslation(lang, "requirementsDesc")}
             </p>
           </div>
 
@@ -1119,7 +1458,7 @@ export default function IssykKulTour() {
               <CardHeader>
                 <CardTitle className="text-blue-600 flex items-center">
                   <CheckCircle className="h-5 w-5 mr-2" />
-                  Tur Talablari
+                  {getTranslation(lang, "turTalablari")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -1128,11 +1467,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Haqiqiy Pasport Talab Qilinadi
+                        {getTranslation(lang, "haqiqiyPasportTalabQilinadi")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        Tur davomida pasportingiz doimo yoningizda bo'lishi
-                        kerak
+                        {getTranslation(lang, "passportRequiredDuringTour")}
                       </p>
                     </div>
                   </li>
@@ -1140,11 +1478,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Yosh Chegarasi: 0-75 Yosh
+                        {getTranslation(lang, "ageLimit")}: 0-75 {getTranslation(lang, "yosh")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        Turlar chaqaloqlardan keksalargacha barcha yoshlar uchun
-                        mos
+                        {getTranslation(lang, "toursForAllAges")}
                       </p>
                     </div>
                   </li>
@@ -1152,11 +1489,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Asosiy Jismoniy Tayyorgarlik
+                        {getTranslation(lang, "basicPhysicalPreparation")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        Ba'zi faoliyatlar o'rtacha jismoniy faollikni talab
-                        qiladi
+                        {getTranslation(lang, "someActivitiesRequireModerateFitness")}
                       </p>
                     </div>
                   </li>
@@ -1164,11 +1500,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Suzish Qobiliyati (Ixtiyoriy)
+                        {getTranslation(lang, "swimmingAbilityOptional")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        Suv faoliyatlari uchun, garchi qutqaruv jiletlari
-                        beriladi
+                        {getTranslation(lang, "lifeJacketsProvidedForWaterActivities")}
                       </p>
                     </div>
                   </li>
@@ -1176,10 +1511,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Sayohat Sug'urtasi Tavsiya Etiladi
+                        {getTranslation(lang, "travelInsuranceRecommended")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        Biz keng qamrovli sayohat sug'urtasini tavsiya qilamiz
+                        {getTranslation(lang, "weRecommendComprehensiveTravelInsurance")}
                       </p>
                     </div>
                   </li>
@@ -1192,7 +1527,7 @@ export default function IssykKulTour() {
               <CardHeader>
                 <CardTitle className="text-green-600 flex items-center">
                   <Camera className="h-5 w-5 mr-2" />
-                  Nima Olib Kelish Kerak
+                  {getTranslation(lang, "whatToBring")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -1201,10 +1536,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Qulay Kiyimlar
+                        {getTranslation(lang, "comfortableClothing")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        O'zgaruvchan tog' ob-havosi uchun qatlamli kiyimlar
+                        {getTranslation(lang, "layeredClothingForMountainWeather")}
                       </p>
                     </div>
                   </li>
@@ -1212,10 +1547,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Suzish Kiyimlari va Plyaj Jihozlari
+                        {getTranslation(lang, "swimwearAndBeachGear")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        Ko'l faoliyatlari va plyajda dam olish uchun
+                        {getTranslation(lang, "forLakeAndBeachActivities")}
                       </p>
                     </div>
                   </li>
@@ -1223,10 +1558,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Quyoshdan Himoya
+                        {getTranslation(lang, "sunProtection")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        Baland tog'lar uchun quyosh kremi, shlyapa va ko'zoynak
+                        {getTranslation(lang, "sunscreenHatSunglassesForMountains")}
                       </p>
                     </div>
                   </li>
@@ -1234,10 +1569,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Qulay Yurish Oyoq Kiyimlari
+                        {getTranslation(lang, "comfortableWalkingShoes")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        Piyoda yurish va ochiq havo faoliyatlari uchun
+                        {getTranslation(lang, "forWalkingAndOutdoorActivities")}
                       </p>
                     </div>
                   </li>
@@ -1245,10 +1580,10 @@ export default function IssykKulTour() {
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                     <div>
                       <span className="font-semibold text-gray-800">
-                        Shaxsiy Dorilar
+                        {getTranslation(lang, "personalMedications")}
                       </span>
                       <p className="text-sm text-gray-600">
-                        Kerakli retseptli yoki shaxsiy dorilar
+                        {getTranslation(lang, "necessaryPrescriptionOrPersonalMedications")}
                       </p>
                     </div>
                   </li>
@@ -1261,7 +1596,7 @@ export default function IssykKulTour() {
               <CardHeader>
                 <CardTitle className="text-orange-600 flex items-center">
                   <Users className="h-5 w-5 mr-2" />
-                  Shartlar va Qoidalar
+                  {getTranslation(lang, "termsAndConditions")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -1269,36 +1604,31 @@ export default function IssykKulTour() {
                   <div className="space-y-4">
                     <div>
                       <h4 className="font-semibold text-gray-800 mb-2">
-                        Bron Qilish va To'lov
+                        {getTranslation(lang, "bookingAndPayment")}
                       </h4>
                       <ul className="space-y-2 text-sm text-gray-600">
                         <li>
-                          • Bron tasdiqlangandan keyin to'liq to'lov talab
-                          qilinadi
+                          • {getTranslation(lang, "fullPaymentRequiredAfterBookingConfirmation")}
                         </li>
-                        <li>• Tur paketlari qaytarilmaydi</li>
+                        <li>{getTranslation(lang, "tourPackagesNonRefundable")}</li>
                         <li>
-                          • Narxlar guruh hajmi va mavsumga qarab o'zgarishi
-                          mumkin
+                          {getTranslation(lang, "pricesMayVaryByGroupSizeAndSeason")}
                         </li>
                       </ul>
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-800 mb-2">
-                        Bekor Qilish Siyosati
+                        {getTranslation(lang, "cancellationPolicy")}
                       </h4>
                       <ul className="space-y-2 text-sm text-gray-600">
                         <li>
-                          • Ishtirokchilar yetarli bo'lmasa turlar qayta
-                          rejalashtirilishi mumkin
+                          {getTranslation(lang, "toursMayBeRescheduledIfNotEnoughParticipants")}
                         </li>
                         <li>
-                          • Ob-havo bilan bog'liq bekor qilinishlar qayta
-                          rejalashtiriladi
+                          {getTranslation(lang, "weatherRelatedCancellationsRescheduled")}
                         </li>
                         <li>
-                          • Kompaniya kerak bo'lsa marshrutni o'zgartirish
-                          huquqini saqlab qoladi
+                          {getTranslation(lang, "companyMayChangeRouteIfNecessary")}
                         </li>
                       </ul>
                     </div>
@@ -1306,34 +1636,31 @@ export default function IssykKulTour() {
                   <div className="space-y-4">
                     <div>
                       <h4 className="font-semibold text-gray-800 mb-2">
-                        Turar Joy
+                        {getTranslation(lang, "accommodation")}
                       </h4>
                       <ul className="space-y-2 text-sm text-gray-600">
                         <li>
-                          • Mehmonxonalar ro'yxati taxminiy va o'zgarishi mumkin
+                          {getTranslation(lang, "hotelListMayChange")}
                         </li>
                         <li>
-                          • Mehmonxonalar bir xil yoki yuqori toifadagi bilan
-                          almashtirilishi mumkin
+                          {getTranslation(lang, "hotelsMayBeReplacedWithSimilarOrBetter")}
                         </li>
                         <li>
-                          • Mehmonxonalar tur marshrutidagi hududlarda
-                          joylashgan
+                          {getTranslation(lang, "hotelsLocatedAlongTourRoute")}
                         </li>
                       </ul>
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-800 mb-2">
-                        Javobgarlik
+                        {getTranslation(lang, "liability")}
                       </h4>
                       <ul className="space-y-2 text-sm text-gray-600">
                         <li>
-                          • Kompaniya yo'qolgan yoki tashlab ketilgan buyumlar
-                          uchun javobgar emas
+                          {getTranslation(lang, "companyNotResponsibleForLostItems")}
                         </li>
-                        <li>• Yo'qolgan narsalarni topishda yordam beriladi</li>
+                        <li>{getTranslation(lang, "helpFindingLostItems")}</li>
                         <li>
-                          • Ishtirokchilar shaxsiy xavfsizlik uchun javobgar
+                          {getTranslation(lang, "participantsResponsibleForOwnSafety")}
                         </li>
                       </ul>
                     </div>
@@ -1363,17 +1690,10 @@ export default function IssykKulTour() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-amber-800 mb-2">
-                      Muhim Eslatma
+                      {getTranslation(lang, "importantNote")}
                     </h3>
                     <p className="text-amber-700 text-sm">
-                      Kompaniya dasturga o'zgartirishlar kiritish, marshrutni,
-                      jo'nash sanalari va vaqtlarini o'zgartirish, shuningdek
-                      dasturda ko'rsatilgan mehmonxonalarni o'zgartirish
-                      huquqini o'zida saqlab qoladi. Agar guruhdagi
-                      ishtirokchilar soni yetarli bo'lmasa tur keyingi mavjud
-                      sanaga ko'chirilishi yoki bekor qilinishi mumkin. Barcha
-                      ishtirokchilar tur davomida pasportlarini olib yurishlari
-                      kerak.
+                      {getTranslation(lang, "companyReservesRightToChangeProgramRouteDatesHotelsIfNotEnoughParticipants")}
                     </p>
                   </div>
                 </div>
@@ -1387,34 +1707,33 @@ export default function IssykKulTour() {
       <section className="py-16 bg-blue-600 text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">
-            Sarguzashtingizga Tayyormisiz?
+            {getTranslation(lang, "readyForAdventure")}
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Mukammal Issiq Ko'l turingizni tanlang va umr bo'yi esda qoladigan
-            xotiralar yarating.
+            {getTranslation(lang, "readyForAdventureDesc")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="flex flex-col items-center">
               <Phone className="h-8 w-8 mb-2" />
-              <h3 className="font-semibold mb-1">Qo'ng'iroq Qiling</h3>
+              <h3 className="font-semibold mb-1">{getTranslation(lang, "call")}</h3>
               <p className="text-blue-100">(99) 406-42-14</p>
               <p className="text-blue-100">(99) 124-42-14</p>
             </div>
             <div className="flex flex-col items-center">
               <Mail className="h-8 w-8 mb-2" />
-              <h3 className="font-semibold mb-1">Email</h3>
+              <h3 className="font-semibold mb-1">{getTranslation(lang, "email")}</h3>
               <p className="text-blue-100">moviytravel@gmail.com</p>
             </div>
             <div className="flex flex-col items-center">
               <MapPinIcon className="h-8 w-8 mb-2" />
-              <h3 className="font-semibold mb-1">Ofis Manzili</h3>
+              <h3 className="font-semibold mb-1">{getTranslation(lang, "address")}</h3>
               <p className="text-blue-100 text-sm">
-                Chilonzor tumani Neus biznes center
+                {getTranslation(lang, "address")}
               </p>
             </div>
             <div className="flex flex-col items-center">
               <Clock className="h-8 w-8 mb-2" />
-              <h3 className="font-semibold mb-1">Ish Vaqti</h3>
+              <h3 className="font-semibold mb-1">{getTranslation(lang, "workTime")}</h3>
               <p className="text-blue-100">Har kuni: 10:00-20:00</p>
             </div>
           </div>
@@ -1426,21 +1745,21 @@ export default function IssykKulTour() {
               className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
             >
               <Instagram className="h-5 w-5" />
-              <span>Instagram</span>
+              <span>{getTranslation(lang, "instagram")}</span>
             </a>
             <a
               href="https://t.me/moviytravel"
               className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
             >
               <MessageCircle className="h-5 w-5" />
-              <span>Telegram</span>
+              <span>{getTranslation(lang, "telegram")}</span>
             </a>
             <a
               href="https://t.me/+rx-hiHcFGh43YTk6"
               className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
             >
               <Users className="h-5 w-5" />
-              <span>Telegram Guruh</span>
+              <span>{getTranslation(lang, "telegramGuruh")}</span>
             </a>
           </div>
 
@@ -1451,7 +1770,7 @@ export default function IssykKulTour() {
           >
             <a href="tel:+998991244214">
               <Phone className="h-4 w-4 mr-2" />
-              Hoziroq Turingizni Bron Qiling
+              {getTranslation(lang, "bookNow")}
             </a>
           </Button>
         </div>
@@ -1473,8 +1792,7 @@ export default function IssykKulTour() {
                 </span>
               </div>
               <p className="text-gray-400 text-sm mb-4">
-                Issiq Ko'lga eng yaxshi turlarni taklif qiluvchi ishonchli
-                sayohat kompaniyasi.
+                {getTranslation(lang, "companyDesc")}
               </p>
               <div className="flex space-x-4">
                 <a
@@ -1492,28 +1810,28 @@ export default function IssykKulTour() {
               </div>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Aloqa Ma'lumotlari</h3>
+              <h3 className="font-semibold mb-4">{getTranslation(lang, "contactInfo")}</h3>
               <div className="space-y-2 text-sm text-gray-400">
-                <p>📞 (99) 406-42-14</p>
-                <p>📞 (99) 124-42-14</p>
-                <p>✉️ moviytravel@gmail.com</p>
-                <p>🌐 www.moviy-travel.uz</p>
-                <p>📍 Chilonzor tumani Neus biznes center</p>
+                <p>{getTranslation(lang, "phone")}: (99) 406-42-14</p>
+                <p>{getTranslation(lang, "phone")}: (99) 124-42-14</p>
+                <p>{getTranslation(lang, "email")}: moviytravel@gmail.com</p>
+                <p>{getTranslation(lang, "website")}: www.moviy-travel.uz</p>
+                <p>{getTranslation(lang, "address")}</p>
               </div>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Ish Vaqti</h3>
+              <h3 className="font-semibold mb-4">{getTranslation(lang, "workTime")}</h3>
               <div className="space-y-2 text-sm text-gray-400">
-                <p>Har kuni: 10:00 - 20:00</p>
+                <p>{getTranslation(lang, "workTime")}: 10:00 - 20:00</p>
               </div>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center">
             <p className="text-gray-400 text-sm">
-              © 2025 Moviy Travel. Barcha huquqlar himoyalangan.
+              © 2025 Moviy Travel. {getTranslation(lang, "barchaHuquqlarHimoyalangan")}.
             </p>
             <p className="text-gray-400 text-sm">
-              Turlar 0-75 yosh uchun mavjud. Pasport talab qilinadi.
+              {getTranslation(lang, "turlar")}: 0-75 {getTranslation(lang, "yosh")}. {getTranslation(lang, "pasportTalabQilinadi")}.
             </p>
           </div>
         </div>
