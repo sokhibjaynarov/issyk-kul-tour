@@ -867,14 +867,23 @@ export default function IssykKulTour() {
               </div>
               {/* Language Select Dropdown */}
               <div className="flex items-center space-x-2">
-                <span>{getTranslation(lang, "language")}:</span>
                 <Select value={lang} onValueChange={value => setLang(value as Lang)}>
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue />
+                  <SelectTrigger className="w-[56px] h-8 px-1">
+                    <div className="flex items-center">
+                      <img
+                        src={lang === "uz" ? "/flags/uz.svg" : "/flags/ru.svg"}
+                        alt={lang === "uz" ? "Uzbek" : "Russian"}
+                        className="w-6 h-6 rounded-full"
+                      />
+                    </div>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="uz">{getTranslation(lang, "uzbek")}</SelectItem>
-                    <SelectItem value="ru">{getTranslation(lang, "russian")}</SelectItem>
+                    <SelectItem value="uz">
+                      <img src="/flags/uz.svg" alt="Uzbek" className="w-6 h-6 rounded-full inline-block mr-2" />
+                    </SelectItem>
+                    <SelectItem value="ru">
+                      <img src="/flags/ru.svg" alt="Russian" className="w-6 h-6 rounded-full inline-block mr-2" />
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
