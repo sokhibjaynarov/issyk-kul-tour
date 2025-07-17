@@ -1776,6 +1776,16 @@ export default function IssykKulTour() {
         </div>
       </section>
 
+      {/* Booking Form Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 max-w-xl">
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+            {lang === "uz" ? "Tashrifingizni bron qiling" : "Забронируйте свой тур"}
+          </h2>
+          <BookingForm lang={lang} />
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-8">
         <div className="container mx-auto px-4">
@@ -1837,5 +1847,171 @@ export default function IssykKulTour() {
         </div>
       </footer>
     </div>
+  );
+}
+
+// Add BookingForm component before main export
+function BookingForm({ lang }: { lang: Lang }) {
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    days: "",
+    language: lang,
+    region: "",
+  });
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    // Prepare message text
+    const commLang = form.language === "uz" ? "O'zbekcha" : "Русский";
+    const message =
+      (lang === "uz"
+        ? `Yangi bron so'rovi:\n\n`
+        : `Новая заявка на тур:\n\n`) +
+      `${lang === "uz" ? "Ism, familiya" : "ФИО"}: ${form.name}\n` +
+      `${lang === "uz" ? "Telefon raqami" : "Телефон"}: ${form.phone}\n` +
+      `${lang === "uz" ? "Kunlar soni" : "Количество дней"}: ${form.days}\n` +
+      `${lang === "uz" ? "Aloqa tili" : "Язык общения"}: ${commLang}\n` +
+      `${lang === "uz" ? "Hudud" : "Регион"}: ${form.region}\n` +
+      `Website: issykkul.moviy-travel.uz`;
+    const token = "7522239457:AAHTSgzT2n48lnDU4RhwYTsLysoLIelkbSI";
+    const chatId = "-1002180572908";
+    try {
+      const res = await (window.fetch || fetch)(
+        `https://api.telegram.org/bot${token}/sendMessage`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: "Markdown",
+          }),
+        }
+      );
+      if (!res.ok) throw new Error("Telegram API error");
+      setSubmitted(true);
+    } catch (err: unknown) {
+      setError(lang === "uz" ? "Xatolik yuz berdi. Iltimos, keyinroq urinib ko'ring." : "Произошла ошибка. Пожалуйста, попробуйте позже.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Reset form on language change
+  useEffect(() => {
+    setForm((prev) => ({ ...prev, language: lang }));
+  }, [lang]);
+
+  if (submitted) {
+    return (
+      <div className="bg-green-100 text-green-800 p-6 rounded-lg text-center font-semibold">
+        {lang === "uz"
+          ? "So'rovingiz muvaffaqiyatli yuborildi! Tez orada siz bilan bog'lanamiz."
+          : "Ваша заявка успешно отправлена! Мы свяжемся с вами в ближайшее время."}
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6 bg-gray-50 p-6 rounded-lg shadow">
+      <div>
+        <label className="block text-gray-700 font-medium mb-1">
+          {lang === "uz" ? "To'liq ismingiz" : "ФИО"}
+        </label>
+        <input
+          type="text"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder={lang === "uz" ? "Ismingizni kiriting" : "Введите ваше имя"}
+        />
+      </div>
+      <div>
+        <label className="block text-gray-700 font-medium mb-1">
+          {lang === "uz" ? "Telefon raqamingiz" : "Номер телефона"}
+        </label>
+        <input
+          type="tel"
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder={lang === "uz" ? "+998 99 123-45-67" : "+998 99 123-45-67"}
+        />
+      </div>
+      <div>
+        <label className="block text-gray-700 font-medium mb-1">
+          {lang === "uz" ? "Necha kunlik tur?" : "Сколько дней тур?"}
+        </label>
+        <select
+          name="days"
+          value={form.days}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="">{lang === "uz" ? "Tanlang" : "Выберите"}</option>
+          <option value="2">2</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="7">7</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-gray-700 font-medium mb-1">
+          {lang === "uz" ? "Aloqa tili" : "Язык общения"}
+        </label>
+        <select
+          name="language"
+          value={form.language}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="uz">O'zbekcha</option>
+          <option value="ru">Русский</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-gray-700 font-medium mb-1">
+          {lang === "uz" ? "Hudud (viloyat/shahar)" : "Регион (область/город)"}
+        </label>
+        <input
+          type="text"
+          name="region"
+          value={form.region}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder={lang === "uz" ? "Masalan: Toshkent" : "Например: Ташкент"}
+        />
+      </div>
+      {error && (
+        <div className="bg-red-100 text-red-700 p-3 rounded text-center font-medium">{error}</div>
+      )}
+      <button
+        type="submit"
+        className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition"
+        disabled={loading}
+      >
+        {loading
+          ? (lang === "uz" ? "Yuborilmoqda..." : "Отправка...")
+          : (lang === "uz" ? "Yuborish" : "Отправить")}
+      </button>
+    </form>
   );
 }
